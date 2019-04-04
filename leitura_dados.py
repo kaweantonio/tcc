@@ -2,15 +2,18 @@
 from dataclasses import dataclass
 from typing import Any
 
-# estrutura para armazernar as peças
+# estrutura para armazernar as peças do tipo:
+# peças regulares                   - Peças R
+# peças irregulares do tipo L       - Peças L
+# peças combinadas (R e L ou L e L) - Peças C
 @dataclass
-class PecaRegular:
+class Peca_R:
   l: int
   w: int
   b: int
 
 @dataclass
-class PecaL:
+class Peca_L:
   l1: int
   w1: int
   l2: int
@@ -18,7 +21,7 @@ class PecaL:
   b: int
 
 @dataclass
-class PecaCombinada:
+class Peca_C:
   pass
 
 @dataclass
@@ -32,7 +35,7 @@ placa_L, placa_W = 0, 0
 # número de peças
 N_pecas = 0
 # vetores de peças regulares e irregulares
-pecas_regulares, pecas_L = [], []
+lista_pecas_R, lista_pecas_L = [], []
 # conjunto de todas as peças
 conju_pecas = []
 
@@ -51,10 +54,10 @@ with open('teste inicial.BiL') as f:
   
     # verifica se a peça é regular ou do tipo-L
     if linha[0] == 0: # peça do tipo L
-      pecas_L.append(PecaL(linha[1], linha[2], linha[3], linha[4], linha[5]))
-      conju_pecas.append(ConjuntoPecas(0, pecas_L[-1]))
+      lista_pecas_L.append(Peca_L(linha[1], linha[2], linha[3], linha[4], linha[5]))
+      conju_pecas.append(ConjuntoPecas(0, lista_pecas_L[-1]))
     else: # peça regular
-      pecas_regulares.append(PecaRegular(linha[0], linha[1], linha[2]))
-      conju_pecas.append(ConjuntoPecas(1, pecas_regulares[-1]))
+      lista_pecas_R.append(Peca_R(linha[0], linha[1], linha[2]))
+      conju_pecas.append(ConjuntoPecas(1, lista_pecas_R[-1]))
 
 print(conju_pecas)
