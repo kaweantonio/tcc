@@ -21,6 +21,10 @@ class PecaL:
 placa_L, placa_W = 0, 0
 # número de peças
 N_pecas = 0
+# vetores de peças regulares e irregulares
+pecas_regulares, pecas_L = [], []
+# conjunto de todas as peças
+conju_pecas = []
 
 # leitura do arquivo
 with open('teste inicial.BiL') as f:
@@ -37,8 +41,8 @@ with open('teste inicial.BiL') as f:
   
     # verifica se a peça é regular ou do tipo-L
     if linha[0] == 0: # peça do tipo L
-      l += 1
-      pass
+      pecas_L.append(PecaL(linha[1], linha[2], linha[3], linha[4], linha[5]))
+      conju_pecas.append(['0', pecas_L[-1]])
     else: # peça regular
-      r += 1
-      pass
+      pecas_regulares.append(PecaRegular(linha[0], linha[1], linha[2]))
+      conju_pecas.append(['1', pecas_regulares[-1]])
