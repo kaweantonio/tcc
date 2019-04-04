@@ -16,6 +16,9 @@ class PecaL:
   w2: int
   b: int
 
+@dataclass
+class PecaCombinada:
+  pass
 # VARIÁVEIS GLOBAIS
 # dimensões L, W da placa
 placa_L, placa_W = 0, 0
