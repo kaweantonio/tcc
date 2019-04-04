@@ -1,3 +1,21 @@
+# imports necessários
+from dataclasses import dataclass
+
+# estrutura para armazernar as peças
+@dataclass
+class PecaRegular:
+  l: int
+  w: int
+  b: int
+
+@dataclass
+class PecaL:
+  l1: int
+  w1: int
+  l2: int
+  w2: int
+  b: int
+
 # VARIÁVEIS GLOBAIS
 # dimensões L, W da placa
 placa_L, placa_W = 0, 0
