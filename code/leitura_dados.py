@@ -40,7 +40,7 @@ lista_pecas_R, lista_pecas_L = [], []
 conju_pecas = []
 
 # leitura do arquivo
-with open('teste inicial.BiL') as f:
+with open('./data/teste inicial.BiL') as f:
   # tamanho da placa
   linha = f.readline().split()
   placa_L, placa_W = (int(x) for x in linha)
@@ -59,5 +59,3 @@ with open('teste inicial.BiL') as f:
     else: # peça regular
       lista_pecas_R.append(Peca_R(linha[0], linha[1], linha[2]))
       conju_pecas.append(ConjuntoPecas(1, lista_pecas_R[-1]))
-
-print(conju_pecas)
