@@ -54,3 +54,8 @@ def __init__(rotate, reflect):
   # conjunto de todas as peças
   global conju_pecas
   conju_pecas = []
+
+
+  ## variável para geração do pdf
+  global doc
+  doc = None

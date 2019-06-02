@@ -1,5 +1,6 @@
 import config.common as common
 import read.read_data as read
+import draw.draw_pdf as draw
 
 ROTATE = False
 REFLECT = False
