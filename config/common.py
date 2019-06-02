@@ -29,8 +29,15 @@ class ConjuntoPecas:
   tipo: int
   dados: Any
 
-def __init__():
+def __init__(rotate, reflect):
   # VARIÁVEIS GLOBAIS
+  ## variáveis de controle
+  global ROTATE
+  ROTATE = rotate
+  global REFLECT
+  REFLECT = reflect
+
+  ## variáveis de descrição das peças
   # dimensões L, W da placa
   global placa_L
   global placa_W 

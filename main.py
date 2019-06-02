@@ -1,8 +1,10 @@
 import config.common as common
 import read.read_data as read
-import draw.draw_pattern as draw
 
-common.__init__()
+ROTATE = False
+REFLECT = False
+
+common.__init__(rotate=ROTATE, reflect=REFLECT)
 
 file_path='./data/teste inicial.BiL'
 
