@@ -1,6 +1,8 @@
 import config.common as common
 import read.read_data as read
-import draw.draw_pdf as draw  
+import draw.tex as tex
+import draw.draw_pieces as draw_pieces
+import draw.draw_pattern as draw_pattern
 import cutting_algorithm.cutting as cutting
 
 ROTATE = False
@@ -22,5 +24,8 @@ if read.read_file(file_path=file_path):
   
   print('\nDimensão da placa:', common.placa_L, 'x', common.placa_W)
 
-  # draw.generate_pdf()
+  tex.preparation()
+  draw_pieces.draw_pieces()
   cutting.cutting()
+  tex.close_document()
+  tex.generate_pdf()

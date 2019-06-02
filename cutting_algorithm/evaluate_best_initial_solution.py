@@ -1,4 +1,6 @@
 import config.common as common
+import draw.draw_pattern as draw_pattern
+import draw.tex as tex
 
 from cutting_algorithm.initial_solution import initial_solution_peca_R as init_solu_peca_R
 from cutting_algorithm.initial_solution import initial_solution_peca_R_rotated as init_solu_peca_R_rotated
@@ -12,3 +14,5 @@ def main():
   print(piece_R, lost_R)
   print(piece_R_rotated, lost_R_rotated)
   print(piece_L, lost_L)
+
+  draw_pattern.initial_pattern(piece_L, 'L', lost_L)
