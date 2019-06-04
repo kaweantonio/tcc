@@ -20,7 +20,7 @@ if read.read_file(file_path=file_path):
 
   print('\nLista de peças L: ')
   for i, peca in enumerate(common.lista_pecas_L):
-    print('Peça L #{} (l1: {}, w1: {}, l2: {}, w2:{})'.format(i+1, peca.l1, peca.w1, peca.l2, peca.w2))
+    print('Peça L #{} (l1: {}, w1: {}, l2: {}, w2: {})'.format(i+1, peca.l1, peca.w1, peca.l2, peca.w2))
   
   print('\nDimensão da placa:', common.placa_L, 'x', common.placa_W)
 
