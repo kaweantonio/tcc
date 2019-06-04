@@ -11,6 +11,7 @@ class Peca_R:
   l: int
   w: int
   b: int
+  rotated: bool
 
 @dataclass
 class Peca_L:
@@ -19,6 +20,7 @@ class Peca_L:
   l2: int
   w2: int
   b: int
+  trans: bool
 
 @dataclass
 class Peca_C:
