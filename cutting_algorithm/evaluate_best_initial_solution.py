@@ -1,6 +1,6 @@
 import config.common as common
 import draw.draw_pattern as draw_pattern
-import draw.tex as tex
+import input_output.tex as tex
 
 from cutting_algorithm.initial_solution import initial_solution_peca_R as init_solu_peca_R
 from cutting_algorithm.initial_solution import initial_solution_peca_R_rotated as init_solu_peca_R_rotated

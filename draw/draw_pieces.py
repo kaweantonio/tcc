@@ -1,5 +1,5 @@
 import config.common as common
-import draw.tex as tex
+import input_output.tex as tex
 
 x, y = 0, 0
 
