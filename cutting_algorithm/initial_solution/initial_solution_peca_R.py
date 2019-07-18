@@ -7,7 +7,9 @@ def initial_solution():
 
   min_lost = plate_area
   piece_index = -1
-  for i, piece in enumerate(common.lista_pecas_R):
+
+  lista_pecas = [peca_R for peca_R in common.lista_pecas_R if peca_R.rotated == False]
+  for i, piece in enumerate(lista_pecas):
     piece_l = piece.l
     piece_w = piece.w
     piece_area = piece_l * piece_w
