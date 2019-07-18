@@ -10,7 +10,7 @@ def tikz_draw_peca_R(l, w, id, x, y):
   y1 = y+w*.10
   common.doc.write(
     ' \\filldraw[color=black!150, fill=green!35, thin]' \
-    '('+str(x)+','+str(y)+') rectangle ('+str(x1)+','+str(y1)+') node [pos=.5] {'+str(id)+'};\n'
+    '('+str(x)+','+str(y)+') rectangle ('+str(x1)+','+str(y1)+') node [pos=.5] {'+str(id+1)+'};\n'
   )
 
 def tikz_draw_peca_L(l1, w1, l2, w2, id, x, y):
@@ -26,7 +26,7 @@ def tikz_draw_peca_L(l1, w1, l2, w2, id, x, y):
     '++('+str(x1-x2)+',0) -- ' \
     '++(0,'+str(y2)+') -- ' \
     '++('+str(-x1)+',0) -- ' \
-    '++(0,'+str(-y1)+') node [right, pos=0.5] {'+str(id)+'};\n'
+    '++(0,'+str(-y1)+') node [right, pos=0.5] {'+str(id+1)+'};\n'
   )
 
 
