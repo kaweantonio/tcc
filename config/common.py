@@ -11,6 +11,7 @@ class Peca_R:
   l: int
   w: int
   b: int
+  rotated: bool
 
 @dataclass
 class Peca_L:
@@ -19,18 +20,29 @@ class Peca_L:
   l2: int
   w2: int
   b: int
+  trans: bool
 
 @dataclass
 class Peca_C:
-  pass
+  piece1_id: Any
+  piece2_id: Any
+  type_comb: int
+  comb_location: int
 
 @dataclass
 class ConjuntoPecas:
   tipo: int
   dados: Any
 
-def __init__():
+def __init__(rotate, reflect):
   # VARIÁVEIS GLOBAIS
+  ## variáveis de controle
+  global ROTATE
+  ROTATE = rotate
+  global REFLECT
+  REFLECT = reflect
+
+  ## variáveis de descrição das peças
   # dimensões L, W da placa
   global placa_L
   global placa_W 
@@ -47,3 +59,8 @@ def __init__():
   # conjunto de todas as peças
   global conju_pecas
   conju_pecas = []
+
+
+  ## variável para geração do pdf
+  global doc
+  doc = None
