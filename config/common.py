@@ -24,7 +24,10 @@ class Peca_L:
 
 @dataclass
 class Peca_C:
-  pass
+  piece1_id: Any
+  piece2_id: Any
+  type_comb: int
+  comb_location: int
 
 @dataclass
 class ConjuntoPecas:
