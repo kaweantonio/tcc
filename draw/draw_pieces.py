@@ -69,21 +69,21 @@ def draw_pieces():
   tex.close_tikz()
 
   tex.new_page()
-  if common.ROTATE:
-    tex.open_tikz()
-    for _ in range(0, common.N_pecas_R):
-      peca_R = common.lista_pecas_R[_]
-      l, w = peca_R.l, peca_R.w
-      tikz_draw_peca_R(w, l)
-    tex.close_tikz()
-    tex.new_page()
+  # if common.ROTATE:
+  #   tex.open_tikz()
+  #   for _ in range(0, common.N_pecas_R):
+  #     peca_R = common.lista_pecas_R[_]
+  #     l, w = peca_R.l, peca_R.w
+  #     tikz_draw_peca_R(w, l)
+  #   tex.close_tikz()
+  #   tex.new_page()
   
   if common.REFLECT:
     tex.open_tikz()
     for _ in range(0, common.N_pecas_L):
       peca_L = common.lista_pecas_L[_]
       l1, w1, l2, w2 = peca_L.l1, peca_L.w1, peca_L.l2, peca_L.w2
-      tikz_draw_reflected_peca_L(l2, w2, l1, w1)
+      tikz_draw_reflected_peca_L(l1, w1, l2, w2)
     tex.close_tikz()
     tex.new_page()
 
