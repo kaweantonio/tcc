@@ -43,9 +43,11 @@ def read_file(file_path=None):
         common.conju_pecas.append(common.ConjuntoPecas(1, common.lista_pecas_R[-1]))
         common.N_pecas_R += 1
 
-        pecas_R_rotated.append(common.Peca_R(linha[1], linha[0], linha[2], True))
+        if common.ROTATE:        
+          pecas_R_rotated.append(common.Peca_R(linha[1], linha[0], linha[2], True))
 
-    common.lista_pecas_R.extend(pecas_R_rotated)
-    common.N_pecas_R += len(pecas_R_rotated)
+    if common.ROTATE:
+      common.lista_pecas_R.extend(pecas_R_rotated)
+      common.N_pecas_R += len(pecas_R_rotated)
 
     return 1
