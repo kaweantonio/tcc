@@ -8,6 +8,7 @@ from typing import Any
 # peças combinadas (R e L ou L e L) - Peças C
 @dataclass
 class Peca_R:
+  id_: int
   l: int
   w: int
   b: int
@@ -15,6 +16,7 @@ class Peca_R:
 
 @dataclass
 class Peca_L:
+  id_:int
   l1: int
   w1: int
   l2: int
@@ -24,10 +26,14 @@ class Peca_L:
 
 @dataclass
 class Peca_C:
+  id_: int
+  l: int
+  w: int
+  z: int
   piece1_id: Any
   piece2_id: Any
-  type_comb: int
-  comb_location: int
+  type_comb: str
+  comb_location: str
 
 @dataclass
 class ConjuntoPecas:
@@ -50,16 +56,17 @@ def __init__(rotate, reflect):
   # número de peças
   global N_pecas
   global N_pecas_R
-  global N_pecas_L 
-  N_pecas, N_pecas_R, N_pecas_L = 0, 0, 0
+  global N_pecas_L
+  global N_pecas_C
+  N_pecas, N_pecas_R, N_pecas_L, N_pecas_C = 0, 0, 0, 0
   # vetores de peças regulares e irregulares
   global lista_pecas_R
   global lista_pecas_L
-  lista_pecas_R, lista_pecas_L = [], []
+  global lista_pecas_C
+  lista_pecas_R, lista_pecas_L, lista_pecas_C = [], [], []
   # conjunto de todas as peças
   global conju_pecas
   conju_pecas = []
-
 
   ## variável para geração do pdf
   global doc
