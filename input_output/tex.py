@@ -1,5 +1,6 @@
 import config.common as common
 import subprocess as sp
+import shlex
 from draw.draw_pieces import draw_pieces
 
 def preparation():
@@ -27,7 +28,9 @@ def close_document():
   common.doc.close()
 
 def generate_pdf():
-  sp.run('pdflatex output.tex', shell=True)
+  cmd = 'pdflatex output.tex'
+
+  sp.run(shlex.split(cmd), shell=False, stdout=sp.DEVNULL)
 
 # def generate_pdf():
 #   preparation()
