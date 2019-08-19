@@ -52,43 +52,50 @@ def tikz_draw_reflected_peca_L(l1, w1, l2, w2):
 
   y = y - w1*.10 - 0.5
 
-def tikz_draw_peca_C(piece_C):
+def tikz_draw_peca_C(pieceC):
   global x,y
-  piece1 = common.conju_pecas[piece_C.piece1_id].dados
-  piece2 = common.conju_pecas[piece_C.piece2_id].dados
+  piece1 = common.conju_pecas[pieceC.piece1_id].dados
+  piece2 = common.conju_pecas[pieceC.piece2_id].dados
 
-  l1 = piece1.l1
-  l2 = piece1.l2
-  w1 = piece1.w1
-  w2 = piece1.w2
+  location = pieceC.comb_location
 
-  if piece_C.comb_location == 'l2':
-    y -= l2 * 0.11
-  
-  x1 = l1*.10
-  x2 = l2*.10
-  y1 = -w1*.10
-  y2 = -w2*.10
-  common.doc.write(
-    '\\draw[color=black!150, fill=gray!35, thin]' \
-    '('+str(x)+','+str(y)+') -- ' \
-    '++('+str(x2)+',0) -- ' \
-    '++(0,'+str(y1-y2)+') -- ' \
-    '++('+str(x1-x2)+',0) -- ' \
-    '++(0,'+str(y2)+') -- ' \
-    '++('+str(-x1)+',0) -- ' \
-    '++(0,'+str(-y1)+');\n'
-  )
-
-  if piece_C.comb_location == 'l1':
-    aux_y = y
+  if location == 'l1':
     aux_x = x
+    aux_y = y
+    # x += pieceC.l*0.10
+
+    if pieceC.w > piece1.w1:
+      y -= 0.1 * piece1.w2
+
+    l1 = piece1.l1
+    l2 = piece1.l2
+    w1 = piece1.w1
+    w2 = piece1.w2
+
+    x1 = l1*.10
+    x2 = l2*.10
+    y1 = -w1*.10
+    y2 = -w2*.10
+    common.doc.write(
+      '\\draw[color=black!150, fill=gray!35, thin]' \
+      '('+str(x)+','+str(y)+') -- ' \
+      '++('+str(x2)+',0) -- ' \
+      '++(0,'+str(y1-y2)+') -- ' \
+      '++('+str(x1-x2)+',0) -- ' \
+      '++(0,'+str(y2)+') -- ' \
+      '++('+str(-x1)+',0) -- ' \
+      '++(0,'+str(-y1)+');\n'
+    )
+
+    l1 = piece2.l1
+    l2 = piece2.l2
+    w1 = piece2.w1
+    w2 = piece2.w2
+
     x += l2 * 0.10
-    
-    l1 = piece2.l1
-    l2 = piece2.l2
-    w1 = piece2.w1
-    w2 = piece2.w2
+
+    if pieceC.w > piece1.w1:
+      y += (2 * piece1.w2 - piece1.w1) * 0.10
 
     x1 = l1*.10
     x2 = l2*.10
@@ -104,20 +111,42 @@ def tikz_draw_peca_C(piece_C):
       '++('+str(x2-x1)+',0) -- ' \
       '++(0,'+str(-y2)+');\n'
     )
-
-    y = aux_y
     x = aux_x
-
   else:
-    aux_y = y
     aux_x = x
-
-    y += w2*0.10
+    aux_y = y
     
+    y -= 0.5
+
+    l1 = piece1.l1
+    l2 = piece1.l2
+    w1 = piece1.w1
+    w2 = piece1.w2
+
+    x1 = l1*.10
+    x2 = l2*.10
+    y1 = -w1*.10
+    y2 = -w2*.10
+    common.doc.write(
+      '\\draw[color=black!150, fill=gray!35, thin]' \
+      '('+str(x)+','+str(y)+') -- ' \
+      '++('+str(x2)+',0) -- ' \
+      '++(0,'+str(y1-y2)+') -- ' \
+      '++('+str(x1-x2)+',0) -- ' \
+      '++(0,'+str(y2)+') -- ' \
+      '++('+str(-x1)+',0) -- ' \
+      '++(0,'+str(-y1)+');\n'
+    )
+
     l1 = piece2.l1
     l2 = piece2.l2
     w1 = piece2.w1
     w2 = piece2.w2
+
+    y += w2 * 0.10
+
+    if pieceC.l > piece1.l1:
+      x += (2 * piece1.l2 - piece1.l1) * 0.10
 
     x1 = l1*.10
     x2 = l2*.10
@@ -133,11 +162,12 @@ def tikz_draw_peca_C(piece_C):
       '++('+str(x2-x1)+',0) -- ' \
       '++(0,'+str(-y2)+');\n'
     )
-
-    y = aux_y
     x = aux_x
+    y = aux_y
 
-  y = y - w1*.10 - 0.5
+#  y = aux_y
+
+  y = y - pieceC.w *.10 - 0.5
 
 def draw_pieces():
   tex.open_tikz()
