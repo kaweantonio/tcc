@@ -1,54 +1,36 @@
 import config.common as common
 
-# def calc_z(L, W, piece1_dim, piece2_dim, location=True):
-#   z = 0
+def calc_z(L, W, piece1, piece2):
+  piece1_area = (piece1.l1 * piece1.w2) + ((piece1.w1 - piece1.w2) * piece1.l2)
+  print(type(piece2))
 
-#   if location:
-#     piece1_innerW = piece1_dim[1] - piece1_dim[3]
-#     piece2_innerW = piece2_dim[1] - piece2_dim[3]
+  if type(piece2) == common.Peca_L:
+    piece2_area = (piece2.l1 * piece2.w2) + ((piece2.w1 - piece2.w2) * piece2.l2)
+  else:
+    piece2_area = piece2.l * piece2.w
+  
+  z = (L * W) - (piece1_area + piece2_area)
 
-#     diff = piece1_innerW - piece2_innerW
-    
-#     if diff > 0:
-#       z1 = diff * 
-
-#   pass
-
+  return z
 
 def combine_L_pieces():
   # combine L pieces with their mirrored pieces
   for piece in common.lista_pecas_L:
-    # trying to merge pieces by "vertical"
-
-    
-    # w2 = piece.w2
-    # aux = piece.w1 - w2
-
-    # if w2 == aux:  
-
+    # combine piece by 'horizontal'
     new_l = piece.l1 + piece.l2
     new_w = 2 * piece.w2 if piece.w1 - piece.w2 < piece.w2 else (piece.w1)
-    new_piece = common.Peca_C(-1, new_l, new_w, 0, piece.id_, piece.id_, 'L-L-mirrored', 'l1')
+    new_piece = common.Peca_C(-1, new_l, new_w, calc_z(new_l, new_w, piece, piece), piece.id_, piece.id_, 'L-L-mirrored', 'l1')
     common.lista_pecas_C.append(new_piece)
     common.conju_pecas.append(common.ConjuntoPecas(2, common.lista_pecas_C[-1]))
     common.N_pecas_C += 1
 
+    # combine piece by 'vertical'
     new_l = 2 * piece.l2 if piece.l1 - piece.l2 < piece.l2 else piece.l1
     new_w = piece.w1 + piece.w2   
-    new_piece = common.Peca_C(-1, new_l, new_w, 0, piece.id_, piece.id_, 'L-L-mirrored', 'l2')
+    new_piece = common.Peca_C(-1, new_l, new_w, calc_z(new_l, new_w, piece, piece), piece.id_, piece.id_, 'L-L-mirrored', 'l2')
     common.lista_pecas_C.append(new_piece)
     common.conju_pecas.append(common.ConjuntoPecas(2, common.lista_pecas_C[-1]))
     common.N_pecas_C += 1
-    # elif aux > w2:
-    #   new_piece = common.Peca_C(-1, piece.l1 + piece.l2, piece.w1, 0, piece.id_, piece.id_, 'L-L-mirrored', 'l1')
-    #   common.lista_pecas_C.append(new_piece)
-    #   common.conju_pecas.append(common.ConjuntoPecas(2, common.lista_pecas_C[-1]))
-    #   common.N_pecas_C += 1
-    # else:
-    #   new_piece = common.Peca_C(-1, piece.l1, piece.w1+piece.w2, 0, piece.id_, piece.id_, 'L-L-mirrored', 'l2')
-    #   common.lista_pecas_C.append(new_piece)
-    #   common.conju_pecas.append(common.ConjuntoPecas(2, common.lista_pecas_C[-1]))
-    #   common.N_pecas_C += 1
 
 # leitura do arquivo
 def read_file(file_path=None):
