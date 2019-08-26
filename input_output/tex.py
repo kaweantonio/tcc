@@ -1,10 +1,10 @@
-import config.common as common
+from config import general
 import subprocess as sp
-from draw.draw_pieces import draw_pieces
+import shlex
 
 def preparation():
-  common.doc = open('output.tex', 'w+')
-  common.doc.write(
+  general.doc = open('output.tex', 'w+')
+  write(
     "\\documentclass{article}\n" \
     "\\usepackage[utf8]{inputenc}\n" \
     "\\usepackage{tikz}\n" \
@@ -14,20 +14,25 @@ def preparation():
   )
 
 def open_tikz():
-  common.doc.write('\\begin{tikzpicture}\n')
+  write('\\begin{tikzpicture}\n')
 
 def close_tikz():
-  common.doc.write('\\end{tikzpicture}\n')
+  write('\\end{tikzpicture}\n')
 
 def new_page():
-  common.doc.write('\\newpage\n')
+  write('\\newpage\n')
 
 def close_document():
-  common.doc.write('\\end{document}')
-  common.doc.close()
+  write('\\end{document}')
+  general.doc.close()
+
+def write(message):
+  general.doc.write(message)
 
 def generate_pdf():
-  sp.run('pdflatex output.tex', shell=True)
+  cmd = 'pdflatex output.tex'
+
+  sp.run(shlex.split(cmd), shell=False, stdout=sp.DEVNULL)
 
 # def generate_pdf():
 #   preparation()
