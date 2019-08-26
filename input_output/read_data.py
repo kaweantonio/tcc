@@ -1,36 +1,33 @@
-import config.common as common
-
-def calc_z(L, W, piece1, piece2):
-  piece1_area = (piece1.l1 * piece1.w2) + ((piece1.w1 - piece1.w2) * piece1.l2)
-  print(type(piece2))
-
-  if type(piece2) == common.Peca_L:
-    piece2_area = (piece2.l1 * piece2.w2) + ((piece2.w1 - piece2.w2) * piece2.l2)
-  else:
-    piece2_area = piece2.l * piece2.w
-  
-  z = (L * W) - (piece1_area + piece2_area)
-
-  return z
+import config.general as general
 
 def combine_L_pieces():
   # combine L pieces with their mirrored pieces
-  for piece in common.lista_pecas_L:
+  for piece in general.pieces_L:
     # combine piece by 'horizontal'
-    new_l = piece.l1 + piece.l2
-    new_w = 2 * piece.w2 if piece.w1 - piece.w2 < piece.w2 else (piece.w1)
-    new_piece = common.Peca_C(-1, new_l, new_w, calc_z(new_l, new_w, piece, piece), piece.id_, piece.id_, 'L-L-mirrored', 'l1')
-    common.lista_pecas_C.append(new_piece)
-    common.conju_pecas.append(common.ConjuntoPecas(2, common.lista_pecas_C[-1]))
-    common.N_pecas_C += 1
+    new_l = piece.dimensions.l1 + piece.dimensions.l2
+    new_w = 2 * piece.dimensions.w2 if piece.dimensions.w1 - piece.dimensions.w2 < piece.dimensions.w2 else (piece.dimensions.w1)
+    b = piece.b * 2
+    dimensions = general.Dimensions(new_l, new_w)
+    combination = general.Combination(piece.id_, piece.id_, general.COMBINE_LL, general.HORIZONTAL)
+    new_piece = general.Piece(general.COMBINED, dimensions, b, False, False, combination)
+
+    new_piece = general.pieces.append(new_piece)
+    general.pieces_C.append(general.pieces[-1])
+    general.num_pieces_C += 1
+    general.num_pieces += 1
 
     # combine piece by 'vertical'
-    new_l = 2 * piece.l2 if piece.l1 - piece.l2 < piece.l2 else piece.l1
-    new_w = piece.w1 + piece.w2   
-    new_piece = common.Peca_C(-1, new_l, new_w, calc_z(new_l, new_w, piece, piece), piece.id_, piece.id_, 'L-L-mirrored', 'l2')
-    common.lista_pecas_C.append(new_piece)
-    common.conju_pecas.append(common.ConjuntoPecas(2, common.lista_pecas_C[-1]))
-    common.N_pecas_C += 1
+    new_l = 2 * piece.dimensions.l2 if piece.dimensions.l1 - piece.dimensions.l2 < piece.dimensions.l2 else piece.dimensions.l1
+    new_w = piece.dimensions.w1 + piece.dimensions.w2   
+    b = piece.b * 2
+    dimensions = general.Dimensions(new_l, new_w)
+    combination = general.Combination(piece.id_, piece.id_, general.COMBINE_LL, general.VERTICAL)
+    new_piece = general.Piece(general.COMBINED, dimensions, b, False, False, combination)
+
+    new_piece = general.pieces.append(new_piece)
+    general.pieces_C.append(general.pieces[-1])
+    general.num_pieces_C += 1
+    general.num_pieces += 1
 
 # leitura do arquivo
 def read_file(file_path=None):
@@ -40,20 +37,20 @@ def read_file(file_path=None):
   with open(file_path) as f:
     # tamanho da placa
     linha = f.readline().split()
-    common.placa_L, common.placa_W = (int(x) for x in linha)
+    L, W = (int(x) for x in linha)
+    general.plate = general.NT_Plate(L, W)
 
     # número de peças
     linha = f.readline()
-    common.N_pecas = int(linha)
+    general.num_pieces = int(linha)
 
     pecas_R_rotated = []
     
-    id_ = 0
-    for _ in range(common.N_pecas):
+    for _ in range(general.num_pieces):
       linha = [int(x) for x in (f.readline().split())]
     
       # verifica se a peça é regular ou do tipo-L
-      if linha[0] == 0: # peça do tipo L
+      if linha[0] == general.IRREGULAR: # peça do tipo L
         trans = False
 
         # all L-pieces need to have L1 greater than W1,
@@ -68,20 +65,30 @@ def read_file(file_path=None):
           linha[3] = linha[4]
           linha[4] = aux
           trans = True
-        common.lista_pecas_L.append(common.Peca_L(id_, linha[1], linha[2], linha[3], linha[4], linha[5], trans))
-        common.conju_pecas.append(common.ConjuntoPecas(0, common.lista_pecas_L[-1]))
-        common.N_pecas_L += 1
-      else: # peça regular
-        common.lista_pecas_R.append(common.Peca_R(id_, linha[0], linha[1], linha[2], False))
-        common.conju_pecas.append(common.ConjuntoPecas(1, common.lista_pecas_R[-1]))
-        common.N_pecas_R += 1
+        type_ = general.IRREGULAR
+        dimensions = general.Dimensions_IRREGULAR(linha[1], linha[2], linha[3], linha[4])
+        b = linha[5]
 
-        if common.ROTATE:
-          id_ += 1
-          common.lista_pecas_R.append(common.Peca_R(id_, linha[1], linha[0], linha[2], True))
-          common.conju_pecas.append(common.ConjuntoPecas(1, common.lista_pecas_R[-1]))
-          common.N_pecas_R += 1
-      id_ += 1
+        general.pieces.append(general.Piece(type_, dimensions,b, False, trans))        
+        general.pieces_L.append(general.pieces[-1])
+        general.num_pieces_L += 1
+      else: # peça regular
+        type_ = general.REGULAR
+
+        dimensions = general.Dimensions(linha[0], linha[1])
+        b = linha[2]
+
+        general.pieces.append(general.Piece(type_, dimensions,b, False, False))        
+        general.pieces_R.append(general.pieces[-1])
+        general.num_pieces_R += 1
+
+        if general.ROTATE:
+          dimensions = general.Dimensions(linha[1], linha[0])
+
+          general.pieces.append(general.Piece(type_, dimensions, b, True, False))        
+          general.pieces_R.append(general.pieces[-1])
+          general.num_pieces_R += 1
+          general.num_pieces += 1
     
     combine_L_pieces()
 
