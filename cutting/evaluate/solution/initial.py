@@ -10,6 +10,10 @@ def best_initial_solution():
     _combined = combined.initial_solution()
 
     if general.DEBUG:
+        print("Initial solution results:")
+        print("Regular: {}".format(_regular[1]))
+        print("Irregular: {}".format(_irregular[1]))
+        print("Combined: {}".format(_combined[1]))
         tex.new_page()
         pattern.initial(_regular[0], _regular[1])
         tex.new_page()
