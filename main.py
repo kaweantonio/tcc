@@ -4,8 +4,8 @@ import input_output.tex as tex
 from draw import piece
 from cutting import cutting
 
-general.ROTATE = True
-general.REFLECT = True
+# general.ROTATE = True
+# general.REFLECT = True
 
 file_path = './data/teste inicial.BiL'
 

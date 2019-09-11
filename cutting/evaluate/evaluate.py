@@ -1,8 +1,10 @@
 from config import general
-from draw import pattern
-from input_output import tex
-from cutting.evaluate.solution import initial
+from cutting.evaluate.solution import initial, optimal
 
 
 def initial_solution():
-    return initial.best_initial_solution()
+    return initial.solve()
+
+
+def optimal_solution():
+    optimal.solve()

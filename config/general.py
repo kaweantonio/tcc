@@ -64,7 +64,8 @@ class Piece:
     rotated : bool
       define if the piece was rotated or not. ONLY APPLY TO REGULAR PIECES
     transformed : bool
-      define if the piece was transformed or not. ONLY APPLY TO IRREGULAR PIECES
+      define if the piece was transformed or not. 
+      ONLY APPLY TO IRREGULAR PIECES
     combination : namedtuple
       a namedtuple containing all the information related to COMBINED pieces
       ONLY USED BY COMBINED PIECES. The namedtuple will have the following fields:

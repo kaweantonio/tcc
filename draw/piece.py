@@ -6,12 +6,12 @@ x, y = 0, 0
 
 def draw_piece_R(id_, dimensions):
     global x, y
-    x1 = x+dimensions.l*.10
-    y1 = y-dimensions.w*.10
+    x1 = x + dimensions.l * .10
+    y1 = y - dimensions.w * .10
     tex.write(
         '\\filldraw[color=black!150, fill=green!35, thin]'
-        '('+str(x)+','+str(y)+') rectangle ('+str(x1)+',' +
-        str(y1)+') node [right, pos=0.5] {'+str(id_)+'};\n'
+        '(' + str(x) + ',' + str(y) + ') rectangle (' + str(x1) + ',' +
+        str(y1) + ') node [right, pos=0.5] {' + str(id_) + '};\n'
     )
 
     y = y1 - 0.5
@@ -19,42 +19,42 @@ def draw_piece_R(id_, dimensions):
 
 def draw_piece_L(id_, dimensions):
     global x, y
-    x1 = dimensions.l1*.10
-    x2 = dimensions.l2*.10
-    y1 = -dimensions.w1*.10
-    y2 = -dimensions.w2*.10
+    x1 = dimensions.l1 * .10
+    x2 = dimensions.l2 * .10
+    y1 = -dimensions.w1 * .10
+    y2 = -dimensions.w2 * .10
     tex.write(
         '\\filldraw[color=black!150, fill=green!35, thin]'
-        '('+str(x)+','+str(y)+') -- '
-        '++('+str(x2)+',0) -- '
-        '++(0,'+str(y1-y2)+') -- '
-        '++('+str(x1-x2)+',0) -- '
-        '++(0,'+str(y2)+') -- '
-        '++('+str(-x1)+',0) -- '
-        '++(0,'+str(-y1)+') node [right, pos=0.5] {'+str(id_)+'};\n'
+        '(' + str(x) + ',' + str(y) + ') -- '
+        '++(' + str(x2) + ',0) -- '
+        '++(0,' + str(y1 - y2) + ') -- '
+        '++(' + str(x1 - x2) + ',0) -- '
+        '++(0,' + str(y2) + ') -- '
+        '++(' + str(-x1) + ',0) -- '
+        '++(0,' + str(-y1) + ') node [right, pos=0.5] {' + str(id_) + '};\n'
     )
 
-    y = y - dimensions.w1*.10 - 0.5
+    y = y - dimensions.w1 * .10 - 0.5
 
 
 def draw_reflected_piece_L(id_, dimensions):
     global x, y
-    x1 = dimensions.l1*.10
-    x2 = dimensions.l2*.10
-    y1 = -dimensions.w1*.10
-    y2 = -dimensions.w2*.10
+    x1 = dimensions.l1 * .10
+    x2 = dimensions.l2 * .10
+    y1 = -dimensions.w1 * .10
+    y2 = -dimensions.w2 * .10
     tex.write(
         '\\filldraw[color=black!150, fill=green!35, thin]'
-        '('+str(x)+','+str(y)+') -- '
-        '++('+str(x1)+',0) -- '
-        '++(0,'+str(y1)+') -- '
-        '++('+str(-x2)+',0) -- '
-        '++(0,'+str(y2-y1)+') -- '
-        '++('+str(x2-x1)+',0) -- '
-        '++(0,'+str(-y2)+') node [right, pos=0.5] {'+str(id_)+'};\n'
+        '(' + str(x) + ',' + str(y) + ') -- '
+        '++(' + str(x1) + ',0) -- '
+        '++(0,' + str(y1) + ') -- '
+        '++(' + str(-x2) + ',0) -- '
+        '++(0,' + str(y2 - y1) + ') -- '
+        '++(' + str(x2 - x1) + ',0) -- '
+        '++(0,' + str(-y2) + ') node [right, pos=0.5] {' + str(id_) + '};\n'
     )
 
-    y = y - dimensions.w1*.10 - 0.5
+    y = y - dimensions.w1 * .10 - 0.5
 
 
 def draw_piece_C(pieceC):
@@ -80,19 +80,20 @@ def draw_piece_C(pieceC):
         w1 = piece1.dimensions.w1
         w2 = piece1.dimensions.w2
 
-        x1 = l1*.10
-        x2 = l2*.10
-        y1 = -w1*.10
-        y2 = -w2*.10
+        x1 = l1 * .10
+        x2 = l2 * .10
+        y1 = -w1 * .10
+        y2 = -w2 * .10
         tex.write(
             '\\filldraw[color=black!150, fill=green!35, thin]'
-            '('+str(x)+','+str(y)+') -- '
-            '++('+str(x2)+',0) -- '
-            '++(0,'+str(y1-y2)+') -- '
-            '++('+str(x1-x2)+',0) -- '
-            '++(0,'+str(y2)+') -- '
-            '++('+str(-x1)+',0) -- '
-            '++(0,'+str(-y1)+') node [right, pos=0.5] {'+str(piece1_id)+'};\n'
+            '(' + str(x) + ',' + str(y) + ') -- '
+            '++(' + str(x2) + ',0) -- '
+            '++(0,' + str(y1 - y2) + ') -- '
+            '++(' + str(x1 - x2) + ',0) -- '
+            '++(0,' + str(y2) + ') -- '
+            '++(' + str(-x1) + ',0) -- '
+            '++(0,' + str(-y1) +
+            ') node [right, pos=0.5] {' + str(piece1_id) + '};\n'
         )
 
         l1 = piece2.dimensions.l1
@@ -105,19 +106,20 @@ def draw_piece_C(pieceC):
         if pieceC.dimensions.w > piece1.dimensions.w1:
             y += (2 * piece1.dimensions.w2 - piece1.dimensions.w1) * 0.10
 
-        x1 = l1*.10
-        x2 = l2*.10
-        y1 = -w1*.10
-        y2 = -w2*.10
+        x1 = l1 * .10
+        x2 = l2 * .10
+        y1 = -w1 * .10
+        y2 = -w2 * .10
         tex.write(
             '\\filldraw[color=black!150, fill=green!35, thin]'
-            '('+str(x)+','+str(y)+') -- '
-            '++('+str(x1)+',0) -- '
-            '++(0,'+str(y1)+') -- '
-            '++('+str(-x2)+',0) -- '
-            '++(0,'+str(y2-y1)+') -- '
-            '++('+str(x2-x1)+',0) -- '
-            '++(0,'+str(-y2)+') node [right, pos=0.5] {'+str(piece2_id)+'};\n'
+            '(' + str(x) + ',' + str(y) + ') -- '
+            '++(' + str(x1) + ',0) -- '
+            '++(0,' + str(y1) + ') -- '
+            '++(' + str(-x2) + ',0) -- '
+            '++(0,' + str(y2 - y1) + ') -- '
+            '++(' + str(x2 - x1) + ',0) -- '
+            '++(0,' + str(-y2) +
+            ') node [right, pos=0.5] {' + str(piece2_id) + '};\n'
         )
         x = aux_x
     else:
@@ -131,19 +133,20 @@ def draw_piece_C(pieceC):
         w1 = piece1.dimensions.w1
         w2 = piece1.dimensions.w2
 
-        x1 = l1*.10
-        x2 = l2*.10
-        y1 = -w1*.10
-        y2 = -w2*.10
+        x1 = l1 * .10
+        x2 = l2 * .10
+        y1 = -w1 * .10
+        y2 = -w2 * .10
         tex.write(
             '\\filldraw[color=black!150, fill=green!35, thin]'
-            '('+str(x)+','+str(y)+') -- '
-            '++('+str(x2)+',0) -- '
-            '++(0,'+str(y1-y2)+') -- '
-            '++('+str(x1-x2)+',0) -- '
-            '++(0,'+str(y2)+') -- '
-            '++('+str(-x1)+',0) -- '
-            '++(0,'+str(-y1)+') node [right, pos=0.5] {'+str(piece1_id)+'};\n'
+            '(' + str(x) + ',' + str(y) + ') -- '
+            '++(' + str(x2) + ',0) -- '
+            '++(0,' + str(y1 - y2) + ') -- '
+            '++(' + str(x1 - x2) + ',0) -- '
+            '++(0,' + str(y2) + ') -- '
+            '++(' + str(-x1) + ',0) -- '
+            '++(0,' + str(-y1) +
+            ') node [right, pos=0.5] {' + str(piece1_id) + '};\n'
         )
 
         l1 = piece2.dimensions.l1
@@ -156,19 +159,20 @@ def draw_piece_C(pieceC):
         if pieceC.dimensions.l > piece1.dimensions.l1:
             x += (2 * piece1.dimensions.l2 - piece1.dimensions.l1) * 0.10
 
-        x1 = l1*.10
-        x2 = l2*.10
-        y1 = -w1*.10
-        y2 = -w2*.10
+        x1 = l1 * .10
+        x2 = l2 * .10
+        y1 = -w1 * .10
+        y2 = -w2 * .10
         tex.write(
             '\\filldraw[color=black!150, fill=green!35, thin]'
-            '('+str(x)+','+str(y)+') -- '
-            '++('+str(x1)+',0) -- '
-            '++(0,'+str(y1)+') -- '
-            '++('+str(-x2)+',0) -- '
-            '++(0,'+str(y2-y1)+') -- '
-            '++('+str(x2-x1)+',0) -- '
-            '++(0,'+str(-y2)+') node [right, pos=0.5] {'+str(piece2_id)+'};\n'
+            '(' + str(x) + ',' + str(y) + ') -- '
+            '++(' + str(x1) + ',0) -- '
+            '++(0,' + str(y1) + ') -- '
+            '++(' + str(-x2) + ',0) -- '
+            '++(0,' + str(y2 - y1) + ') -- '
+            '++(' + str(x2 - x1) + ',0) -- '
+            '++(0,' + str(-y2) +
+            ') node [right, pos=0.5] {' + str(piece2_id) + '};\n'
         )
         x = aux_x
         y = aux_y

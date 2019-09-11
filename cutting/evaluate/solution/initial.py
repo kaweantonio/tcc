@@ -4,7 +4,7 @@ from draw import pattern
 from input_output import tex
 
 
-def best_initial_solution():
+def solve():
     _regular = regular.initial_solution()
     _irregular = irregular.initial_solution()
     _combined = combined.initial_solution()
