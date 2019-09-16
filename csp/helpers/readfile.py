@@ -1,48 +1,8 @@
-import config.general as general
+from csp.config import general
 
-
-def combine_L_pieces():
-    # combine L pieces with their mirrored pieces
-    for piece in general.pieces_L:
-        # combine piece by 'horizontal'
-        new_l = piece.dimensions.l1 + piece.dimensions.l2
-        new_w = 2 * piece.dimensions.w2 if piece.dimensions.w1 - \
-            piece.dimensions.w2 < piece.dimensions.w2 else (piece.dimensions.w1)
-        b = piece.b * 2
-        dimensions = general.Dimensions(new_l, new_w)
-        combination = general.Combination(
-            piece.id_, piece.id_, general.COMBINE_LL, general.HORIZONTAL)
-        new_piece = general.Piece(
-            general.COMBINED, dimensions, b, False, False, combination)
-
-        new_piece = general.pieces.append(new_piece)
-        general.pieces_C.append(general.pieces[-1])
-        general.num_pieces_C += 1
-        general.num_pieces += 1
-
-        # combine piece by 'vertical'
-        new_l = 2 * piece.dimensions.l2 if piece.dimensions.l1 - \
-            piece.dimensions.l2 < piece.dimensions.l2 else piece.dimensions.l1
-        new_w = piece.dimensions.w1 + piece.dimensions.w2
-        b = piece.b * 2
-        dimensions = general.Dimensions(new_l, new_w)
-        combination = general.Combination(
-            piece.id_, piece.id_, general.COMBINE_LL, general.VERTICAL)
-        new_piece = general.Piece(
-            general.COMBINED, dimensions, b, False, False, combination)
-
-        new_piece = general.pieces.append(new_piece)
-        general.pieces_C.append(general.pieces[-1])
-        general.num_pieces_C += 1
-        general.num_pieces += 1
 
 # leitura do arquivo
-
-
-def read_file(file_path=None):
-    if file_path is None:
-        return 0
-
+def read(file_path=None):
     with open(file_path) as f:
         # tamanho da placa
         linha = f.readline().split()
@@ -102,7 +62,3 @@ def read_file(file_path=None):
                     general.pieces_R.append(general.pieces[-1])
                     general.num_pieces_R += 1
                     general.num_pieces += 1
-
-        combine_L_pieces()
-
-        return 1

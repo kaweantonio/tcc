@@ -1,30 +1,25 @@
-from config import general
-import input_output.tex as tex
+from copy import deepcopy as copy
 
-x, y = 0, 0
+from csp.helpers import tex
 
 
-def draw_piece_R(id_, dimensions):
-    global x, y
+def draw_piece_R(dimensions, id_, x, y):
     x1 = x + dimensions.l * .10
-    y1 = y - dimensions.w * .10
+    y1 = y + dimensions.w * .10
     tex.write(
-        '\\filldraw[color=black!150, fill=green!35, thin]'
-        '(' + str(x) + ',' + str(y) + ') rectangle (' + str(x1) + ',' +
-        str(y1) + ') node [right, pos=0.5] {' + str(id_) + '};\n'
+        ' \\filldraw[color=black!150, fill=green!35, thin]'
+        '(' + str(x) + ',' + str(y) + ') rectangle (' + str(x1) +
+        ',' + str(y1) + ') node [pos=.5] {' + str(id_) + '};\n'
     )
 
-    y = y1 - 0.5
 
-
-def draw_piece_L(id_, dimensions):
-    global x, y
+def draw_piece_L(dimensions, id_, x, y):
     x1 = dimensions.l1 * .10
     x2 = dimensions.l2 * .10
     y1 = -dimensions.w1 * .10
     y2 = -dimensions.w2 * .10
     tex.write(
-        '\\filldraw[color=black!150, fill=green!35, thin]'
+        ' \\filldraw[color=black!150, fill=green!35, thin]'
         '(' + str(x) + ',' + str(y) + ') -- '
         '++(' + str(x2) + ',0) -- '
         '++(0,' + str(y1 - y2) + ') -- '
@@ -34,36 +29,10 @@ def draw_piece_L(id_, dimensions):
         '++(0,' + str(-y1) + ') node [right, pos=0.5] {' + str(id_) + '};\n'
     )
 
-    y = y - dimensions.w1 * .10 - 0.5
 
-
-def draw_reflected_piece_L(id_, dimensions):
-    global x, y
-    x1 = dimensions.l1 * .10
-    x2 = dimensions.l2 * .10
-    y1 = -dimensions.w1 * .10
-    y2 = -dimensions.w2 * .10
-    tex.write(
-        '\\filldraw[color=black!150, fill=green!35, thin]'
-        '(' + str(x) + ',' + str(y) + ') -- '
-        '++(' + str(x1) + ',0) -- '
-        '++(0,' + str(y1) + ') -- '
-        '++(' + str(-x2) + ',0) -- '
-        '++(0,' + str(y2 - y1) + ') -- '
-        '++(' + str(x2 - x1) + ',0) -- '
-        '++(0,' + str(-y2) + ') node [right, pos=0.5] {' + str(id_) + '};\n'
-    )
-
-    y = y - dimensions.w1 * .10 - 0.5
-
-
-def draw_piece_C(pieceC):
-    global x, y
-    piece1_id = pieceC.combination.piece1_id
-    piece2_id = pieceC.combination.piece2_id
-
-    piece1 = general.pieces[piece1_id]
-    piece2 = general.pieces[piece2_id]
+def draw_piece_C(pieceC, x, y):
+    piece1 = general.pieces[pieceC.combination.piece1_id]
+    piece2 = general.pieces[pieceC.combination.piece2_id]
 
     location = pieceC.combination.location
 
@@ -84,8 +53,9 @@ def draw_piece_C(pieceC):
         x2 = l2 * .10
         y1 = -w1 * .10
         y2 = -w2 * .10
+
         tex.write(
-            '\\filldraw[color=black!150, fill=green!35, thin]'
+            ' \\filldraw[color=black!150, fill=green!35, thin]'
             '(' + str(x) + ',' + str(y) + ') -- '
             '++(' + str(x2) + ',0) -- '
             '++(0,' + str(y1 - y2) + ') -- '
@@ -93,7 +63,8 @@ def draw_piece_C(pieceC):
             '++(0,' + str(y2) + ') -- '
             '++(' + str(-x1) + ',0) -- '
             '++(0,' + str(-y1) +
-            ') node [right, pos=0.5] {' + str(piece1_id) + '};\n'
+            ') node [right, pos=0.5] {' +
+            str(pieceC.combination.piece1_id) + '};\n'
         )
 
         l1 = piece2.dimensions.l1
@@ -111,7 +82,7 @@ def draw_piece_C(pieceC):
         y1 = -w1 * .10
         y2 = -w2 * .10
         tex.write(
-            '\\filldraw[color=black!150, fill=green!35, thin]'
+            ' \\filldraw[color=black!150, fill=green!35, thin]'
             '(' + str(x) + ',' + str(y) + ') -- '
             '++(' + str(x1) + ',0) -- '
             '++(0,' + str(y1) + ') -- '
@@ -119,14 +90,15 @@ def draw_piece_C(pieceC):
             '++(0,' + str(y2 - y1) + ') -- '
             '++(' + str(x2 - x1) + ',0) -- '
             '++(0,' + str(-y2) +
-            ') node [right, pos=0.5] {' + str(piece2_id) + '};\n'
+            ') node [right, pos=0.5] {' +
+            str(pieceC.combination.piece2_id) + '};\n'
         )
         x = aux_x
     else:
         aux_x = x
         aux_y = y
 
-        y -= 0.5
+        # y -= 0.5
 
         l1 = piece1.dimensions.l1
         l2 = piece1.dimensions.l2
@@ -138,7 +110,7 @@ def draw_piece_C(pieceC):
         y1 = -w1 * .10
         y2 = -w2 * .10
         tex.write(
-            '\\filldraw[color=black!150, fill=green!35, thin]'
+            ' \\filldraw[color=black!150, fill=green!35, thin]'
             '(' + str(x) + ',' + str(y) + ') -- '
             '++(' + str(x2) + ',0) -- '
             '++(0,' + str(y1 - y2) + ') -- '
@@ -146,7 +118,8 @@ def draw_piece_C(pieceC):
             '++(0,' + str(y2) + ') -- '
             '++(' + str(-x1) + ',0) -- '
             '++(0,' + str(-y1) +
-            ') node [right, pos=0.5] {' + str(piece1_id) + '};\n'
+            ') node [right, pos=0.5] {' +
+            str(pieceC.combination.piece1_id) + '};\n'
         )
 
         l1 = piece2.dimensions.l1
@@ -164,7 +137,7 @@ def draw_piece_C(pieceC):
         y1 = -w1 * .10
         y2 = -w2 * .10
         tex.write(
-            '\\filldraw[color=black!150, fill=green!35, thin]'
+            ' \\filldraw[color=black!150, fill=green!35, thin]'
             '(' + str(x) + ',' + str(y) + ') -- '
             '++(' + str(x1) + ',0) -- '
             '++(0,' + str(y1) + ') -- '
@@ -172,36 +145,64 @@ def draw_piece_C(pieceC):
             '++(0,' + str(y2 - y1) + ') -- '
             '++(' + str(x2 - x1) + ',0) -- '
             '++(0,' + str(-y2) +
-            ') node [right, pos=0.5] {' + str(piece2_id) + '};\n'
+            ') node [right, pos=0.5] {' +
+            str(pieceC.combination.piece2_id) + '};\n'
         )
         x = aux_x
         y = aux_y
 
-#  y = aux_y
 
-    y = y - pieceC.dimensions.w * .10 - 0.5
+def draw_plate(x, y):
+    x1 = general.plate.L * .10
+    y1 = general.plate.W * .10
+
+    tex.write(
+        '\\draw[color=black!150, fill=gray!35, thin]'
+        '(' + str(x) + ',' + str(y) + ') rectangle (' +
+        str(x1) + ',' + str(y1) + ');\n'
+    )
+
+    y = y1
 
 
-def draw_pieces():
+def initial(piece_index, lost_area):
+    # local x, y
+    x = 0
+    y = 0
+
     tex.open_tikz()
-    for _ in range(0, general.num_pieces_R):
-        piece_R = general.pieces_R[_]
-        draw_piece_R(piece_R.id_, piece_R.dimensions)
+    draw_plate(x, y)
+    piece_type = general.pieces[piece_index].type_
+    piece = copy(general.pieces[piece_index])
+
+    if piece_type == general.REGULAR:
+        n = general.plate.L // piece.dimensions.l
+        m = general.plate.W // piece.dimensions.w
+        for i in range(m):
+            y = i * (piece.dimensions.w * .10)
+            for j in range(n):
+                x = j * (piece.dimensions.l * .10)
+                draw_piece_R(piece.dimensions, piece.id_, x, y)
+    elif piece_type == general.IRREGULAR:
+        n = general.plate.L // piece.dimensions.l1
+        m = general.plate.W // piece.dimensions.w1
+        aux1 = piece.dimensions.l1 * .10
+        aux2 = piece.dimensions.w1 * .10
+        for i in range(m):
+            y = (i + 1) * aux2
+            for j in range(n):
+                x = j * aux1
+                draw_piece_L(piece.dimensions, piece.id_, x, y)
+    else:
+        n = general.plate.L // piece.dimensions.l
+        m = general.plate.W // piece.dimensions.w
+        aux1 = general.pieces[piece.combination.piece1_id].dimensions.l1 * .10
+        aux2 = general.pieces[piece.combination.piece1_id].dimensions.w1 * .10
+        aux3 = general.pieces[piece.combination.piece2_id].dimensions.w2 * .10
+        for i in range(m):
+            y = (i + 1) * aux2 + i * aux3
+            for j in range(n):
+                x = j * aux1
+                draw_piece_C(piece, x, y)
+
     tex.close_tikz()
-
-    tex.new_page()
-    tex.open_tikz()
-    for _ in range(0, general.num_pieces_L):
-        piece_L = general.pieces_L[_]
-        draw_piece_L(piece_L.id_, piece_L.dimensions)
-    tex.close_tikz()
-
-    tex.new_page()
-    tex.open_tikz()
-    for _ in range(0, general.num_pieces_C):
-        piece_C = general.pieces_C[_]
-        draw_piece_C(piece_C)
-
-    tex.close_tikz()
-
-    tex.new_page()

@@ -1,37 +1,10 @@
 from collections import namedtuple
 from dataclasses import dataclass, field
-from enum import Enum
 import itertools
 from typing import Any
 
 DEBUG = True
 
-# @dataclass
-# class Peca_R:
-#   id_: int
-#   l: int
-#   w: int
-#   b: int
-#   rotated: bool
-
-# @dataclass
-# class Peca_L:
-#   id_:int
-#   l1: int
-#   w1: int
-#   l2: int
-#   w2: int
-#   b: int
-#   trans: bool
-
-# @dataclass
-# class Peca_C:
-#   l: int
-#   w: int
-#   z: int
-#   piece1_id: Any
-#   piece2_id: Any
-#   type_comb: str
 #   comb_location: str
 
 

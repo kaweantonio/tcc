@@ -1,6 +1,7 @@
-from config import general
 import subprocess as sp
 import shlex
+
+from csp.config import general
 
 
 def preparation():
