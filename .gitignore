@@ -9,3 +9,5 @@ __pycache__/
 *.tex
 *.aux
 *.log
+*.lp
+*.dat
