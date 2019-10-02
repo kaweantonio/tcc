@@ -14,12 +14,12 @@ class BidimensionalKnapsack(base.Base):
         
         self.len_strips = None
         self.strips = dict()
-        self.strips_loss = dict()
         self.strips_area = dict()
         self.strips_solution = dict()
         self.strips_solution_loss = dict()
         self.solution = None
         self.solution_loss = None
+        self.solution_without_transform = None
 
     def get_solution(self) -> Tuple[list, int]:
         return self.solution, self.solution_loss
@@ -27,6 +27,7 @@ class BidimensionalKnapsack(base.Base):
     def solve(self):
         
         self._generate_strips()
+
         self._solve_strips()
         self._solve_last_knapsack()
 
@@ -70,6 +71,7 @@ class BidimensionalKnapsack(base.Base):
         L, W = general.plate.L, general.plate.W
         pieces = general.pieces
 
+        i = 1
         for key in self.strips.keys():
             A, b, c = [], [], []
             dummy_variables = []
@@ -78,12 +80,6 @@ class BidimensionalKnapsack(base.Base):
             pieces_id_on_strip = self.strips[key]
 
             aux = []
-
-            # adds dummy variable in the objective function
-            c.append(self.strips_area[key])
-            # for each dummy variable is necessary to inform
-            # unique id, default value and constraint type
-            dummy_variables.append([0, 1, default_constraint_types['EQUAL']])
 
             # adds first constraint: sum of all pieces length in strip
             # has to be less than or equal to plate length
@@ -98,7 +94,7 @@ class BidimensionalKnapsack(base.Base):
                 
                 aux.append(l)
 
-                c.append(-piece.area)
+                c.append(piece.area)
             
             A.append(aux)
             b.append(L)
@@ -109,8 +105,11 @@ class BidimensionalKnapsack(base.Base):
                                                    A,
                                                    b,
                                                    c,
-                                                   constraint_types)
-            solution.pop(0)
+                                                   constraint_types, i, sense='maximize')
+            i += 1
+
+            print("Faixa: {}, solução: {}, perda: {}".format(self.strips[key], solution, self.strips_area[key]-solution_loss))
+            print(A,b,c)
             self.strips_solution[key] = solution
             self.strips_solution_loss[key] = solution_loss
             
@@ -122,31 +121,32 @@ class BidimensionalKnapsack(base.Base):
         constraint_types = []
 
         aux = []
-        
-        # adds plate area as dummy variable in the objective function
-        c.append(L*W)
-        dummy_variables.append([0, 1, default_constraint_types['EQUAL']])
 
         # add constraint for each strip: sum of all strips weigth (key value) in plate 
         # has to be less than or equal to plate weigth
         # also adds the area for each strip in the objective function
         for key in self.strips.keys():
-            aux.append(key)
-            c.append(-self.strips_area[key])
+            if self.strips_solution[key] is not None:
+                aux.append(key)
+                c.append(self.strips_solution_loss[key])
 
         A.append(aux)
         b.append(W)
         constraint_types.append(default_constraint_types['LESS_THAN_OR_EQUAL'])
 
-        solution, solution_loss = self.linear_model(self.len_strips,
+        print(A, b, c)
+        solution, solution_loss = self.linear_model(len(aux),
                                                dummy_variables,
                                                A,
                                                b,
                                                c,
-                                               constraint_types)
-        solution.pop(0)
+                                               constraint_types, 0, sense='maximize')
 
-        solution = self._transform_solution(solution)
+        print(solution, solution_loss)
+
+        self.solution_without_transform = solution
+
+        solution = self._transform_solution(solution)   
 
         self.solution = solution
         self.solution_loss = solution_loss
@@ -161,7 +161,7 @@ class BidimensionalKnapsack(base.Base):
         solution = [int(x) for x in solution]
         
         for index, value in enumerate(solution):
-            if value == 0:
+            if value == 0.0:
                 continue
 
             strip = self.strips[key_strips[index]]
@@ -171,8 +171,14 @@ class BidimensionalKnapsack(base.Base):
                 if pieces[piece].type_ != general.COMBINED:
                     real_solution[piece] += value * strip_solution[i]
                 else:
-                    if pieces[piece].combination.type_ == general.COMBINE_LL:
+                    combination_type = pieces[piece].combination.type_
+                    if combination_type == general.COMBINE_LL:
                         real_solution[pieces[piece].combination.piece1_id] += 2 * value * strip_solution[i]
-        
+                        print("combine_LL", value, strip_solution[i], key_strips[index])
+                    elif combination_type == general.COMBINE_LR:
+                        real_solution[pieces[piece].combination.piece1_id] += value * strip_solution[i]
+                        real_solution[pieces[piece].combination.piece2_id] += value * strip_solution[i]
+                        print("combine_LR", value, strip_solution[i], key_strips[index])
+
         return real_solution
 

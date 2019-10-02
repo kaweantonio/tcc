@@ -40,7 +40,7 @@ def write(message):
 def generate_pdf():
     cmd = 'pdflatex output.tex'
 
-    sp.run(shlex.split(cmd), shell=False, stdout=sp.DEVNULL)
+    sp.run(shlex.split(cmd), shell=True)
 
 # def generate_pdf():
 #   preparation()

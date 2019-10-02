@@ -96,6 +96,8 @@ class Piece:
 # GLOBAL VARIABLES
 ROTATE = False
 REFLECT = True
+DRAW = False
+RESTRICTED = False
 
 IRREGULAR = 0
 REGULAR = 1

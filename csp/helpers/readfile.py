@@ -13,8 +13,6 @@ def read(file_path=None):
         linha = f.readline()
         general.num_pieces = int(linha)
 
-        pecas_R_rotated = []
-
         for _ in range(general.num_pieces):
             linha = [int(x) for x in (f.readline().split())]
 
@@ -37,8 +35,10 @@ def read(file_path=None):
                 type_ = general.IRREGULAR
                 dimensions = general.Dimensions_IRREGULAR(
                     linha[1], linha[2], linha[3], linha[4])
-                b = linha[5]
-
+                if general.RESTRICTED:
+                    b = linha[5]
+                else:
+                    b = 1
                 general.pieces.append(general.Piece(
                     type_, dimensions, b, False, trans))
                 general.pieces_L.append(general.pieces[-1])
@@ -47,8 +47,12 @@ def read(file_path=None):
                 type_ = general.REGULAR
 
                 dimensions = general.Dimensions(linha[0], linha[1])
-                b = linha[2]
 
+                if general.RESTRICTED:
+                    b = linha[2]
+                else:
+                    b = 1
+                    
                 general.pieces.append(general.Piece(
                     type_, dimensions, b, False, False))
                 general.pieces_R.append(general.pieces[-1])

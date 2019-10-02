@@ -1,15 +1,17 @@
 from typing import Tuple
 
 import cplex
+from cplex.exceptions import CplexSolverError
 
 
 class Base():
 
     def linear_model(self, num_decision_var: int, dummy: list, A: list,
                      b: list, c: list,
-                     constraint_types: list, sense="minimize") -> Tuple[list, int]:
+                     constraint_types: list, p_id: int, sense="minimize") -> Tuple[list, int]:
         # create cplex model
         model = cplex.Cplex()
+        model.parameters.mip.tolerances.integrality.set(0)
 
         num_dummy_var = len(dummy)
         num_constraints = len(constraint_types)
@@ -18,14 +20,10 @@ class Base():
         # add the decision variables
         # obs: lower bound is 0.0 by default
         model.variables.add(names=["x" + str(i)
-                            for i in range(0, num_total_var)])
+                            for i in range(0, num_total_var)], types=[model.variables.type.integer] * num_total_var)
 
         # add the objective function
         model.objective.set_linear([(i, c[i]) for i in range(0, num_total_var)])
-
-        # set the type for all variable to INTEGER
-        model.variables.set_types([(i, model.variables.type.integer)
-                                   for i in range(0, num_total_var)])
 
         # add the constrains related to dummy variables
         for i in range(num_dummy_var):
@@ -57,7 +55,10 @@ class Base():
         model.set_warning_stream(None)
         model.set_results_stream(None)
 
-        model.solve()
-        print(A, b, c)
-        print(model.solution.get_values(), model.solution.get_objective_value())
-        return model.solution.get_values(), model.solution.get_objective_value()
+        model.write("teste"+str(p_id)+'.lp')
+        
+        try:
+            model.solve()
+            return model.solution.get_values(), model.solution.get_objective_value()
+        except CplexSolverError:
+            return None, None

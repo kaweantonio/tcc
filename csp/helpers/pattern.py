@@ -1,5 +1,6 @@
 from copy import deepcopy as copy
 
+from csp.config import general
 from csp.helpers import tex
 
 
