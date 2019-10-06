@@ -119,7 +119,7 @@ Dimensions = namedtuple("Dimensions", ['l', 'w'])
 Dimensions_IRREGULAR = namedtuple(
     "Dimensions_IRREGULAR", ['l1', 'w1', 'l2', 'w2'])
 Combination = namedtuple(
-    "Combination", ['piece1_id', 'piece2_id', 'type_', 'location'])
+    "Combination", ['piece1_id', 'piece2_id', 'type_', 'location', 'piece_id_demand'])
 
 # total of all pieces and by type
 num_pieces, num_pieces_R, num_pieces_L, num_pieces_C = 0, 0, 0, 0

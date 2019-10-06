@@ -32,7 +32,7 @@ class cuttingStockProblem():
             b = piece.b
             dimensions = general.Dimensions(new_l, new_w)
             combination = general.Combination(
-                piece.id_, piece.id_, general.COMBINE_LL, general.HORIZONTAL)
+                piece.id_, piece.id_, general.COMBINE_LL, general.HORIZONTAL, piece.id_)
             new_piece = general.Piece(
                 general.COMBINED, dimensions, b, False, False, combination)
 
@@ -46,7 +46,7 @@ class cuttingStockProblem():
             new_w = piece.dimensions.w1 + piece.dimensions.w2
             dimensions = general.Dimensions(new_l, new_w)
             combination = general.Combination(
-                piece.id_, piece.id_, general.COMBINE_LL, general.VERTICAL)
+                piece.id_, piece.id_, general.COMBINE_LL, general.VERTICAL, piece.id_)
             new_piece = general.Piece(
                 general.COMBINED, dimensions, b, False, False, combination)
 
@@ -55,7 +55,7 @@ class cuttingStockProblem():
             general.num_pieces_C += 1
             general.num_pieces += 1
 
-    def _combine_L_R_pieces(self, alfa=0.15):
+    def _combine_L_R_pieces(self, alfa=0.30):
         for piece_L in general.pieces_L:
             
             # determine region to combine pieces:
@@ -65,13 +65,20 @@ class cuttingStockProblem():
                 for piece_R in general.pieces_R:
                     new_l = piece_L.dimensions.l1 if piece_R.dimensions.l <= piece_L.dimensions.l1 else piece_R.dimensions.l
                     new_w = piece_L.dimensions.w1 + piece_R.dimensions.w
-                    b = min(piece_L.b, piece_R.b)
+
+                    if piece_L.b < piece_R.b:
+                        b = piece_L.b
+                        piece_id_demand = piece_L.id_
+                    else:
+                        b = piece_R.b
+                        piece_id_demand = piece_R.id_
+
                     area = new_l * new_w
                     loss = area - (piece_L.area + piece_R.area)
                     if loss <= area * alfa:
                         dimensions = general.Dimensions(new_l, new_w)
                         combination = general.Combination(
-                            piece_L.id_, piece_R.id_, general.COMBINE_LR, general.VERTICAL
+                            piece_L.id_, piece_R.id_, general.COMBINE_LR, general.VERTICAL, piece_id_demand
                         )
 
                         new_piece = general.Piece(
@@ -86,7 +93,13 @@ class cuttingStockProblem():
                 for piece_R in general.pieces_R:
                     new_l = piece_L.dimensions.l1 if piece_R.dimensions.l <= (piece_L.dimensions.l1-piece_L.dimensions.l2) else piece_L.dimensions.l2 + piece_R.dimensions.l
                     new_w = piece_L.dimensions.w1 if piece_R.dimensions.w <= (piece_L.dimensions.w1-piece_L.dimensions.w2) else piece_L.dimensions.w2 + piece_R.dimensions.w
-                    b = min(piece_L.b, piece_R.b)
+                    
+                    if piece_L.b < piece_R.b:
+                        b = piece_L.b
+                        piece_id_demand = piece_L.id_
+                    else:
+                        b = piece_R.b
+                        piece_id_demand = piece_R.id_
 
                     area = new_l * new_w
                     print(area, new_l, new_w)
@@ -94,7 +107,7 @@ class cuttingStockProblem():
                     if loss <= area * alfa:
                         dimensions = general.Dimensions(new_l, new_w)
                         combination = general.Combination(
-                            piece_L.id_, piece_R.id_, general.COMBINE_LR, general.HORIZONTAL
+                            piece_L.id_, piece_R.id_, general.COMBINE_LR, general.HORIZONTAL, piece_id_demand
                         )
 
                         new_piece = general.Piece(
@@ -109,7 +122,7 @@ class cuttingStockProblem():
         if general.RESTRICTED:
             knapsack = RestrictedBidimensionalKnapsack()
         else:
-        knapsack = BidimensionalKnapsack()
+            knapsack = BidimensionalKnapsack()
         knapsack.solve()
 
         self.solution = knapsack.solution
