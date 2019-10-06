@@ -4,7 +4,7 @@ from typing import Tuple
 from datetime import datetime
 
 from csp.config import general
-from csp.knapsack.knapsack import BidimensionalKnapsack
+from csp.knapsack.knapsack import BidimensionalKnapsack, RestrictedBidimensionalKnapsack
 from csp.helpers import readfile
 
 
@@ -106,6 +106,9 @@ class cuttingStockProblem():
                         general.num_pieces += 1
     
     def _solve(self):
+        if general.RESTRICTED:
+            knapsack = RestrictedBidimensionalKnapsack()
+        else:
         knapsack = BidimensionalKnapsack()
         knapsack.solve()
 
