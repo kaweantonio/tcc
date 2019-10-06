@@ -16,13 +16,13 @@ class BidimensionalKnapsack(base.Base):
         self.strips = dict()
         self.strips_area = dict()
         self.strips_solution = dict()
-        self.strips_solution_loss = dict()
+        self.strips_solution_value = dict()
         self.solution = None
-        self.solution_loss = None
+        self.solution_value = None
         self.solution_without_transform = None
 
     def get_solution(self) -> Tuple[list, int]:
-        return self.solution, self.solution_loss
+        return self.solution, self.solution_value
     
     def solve(self):
         
@@ -100,7 +100,7 @@ class BidimensionalKnapsack(base.Base):
             b.append(L)
             constraint_types.append(default_constraint_types['LESS_THAN_OR_EQUAL'])
 
-            solution, solution_loss = self.linear_model(len(pieces_id_on_strip),
+            solution, solution_value = self.linear_model(len(pieces_id_on_strip),
                                                    dummy_variables,
                                                    A,
                                                    b,
@@ -108,10 +108,10 @@ class BidimensionalKnapsack(base.Base):
                                                    constraint_types, i, sense='maximize')
             i += 1
 
-            print("Faixa: {}, solução: {}, perda: {}".format(self.strips[key], solution, self.strips_area[key]-solution_loss))
+            print("Faixa: {}, solução: {}, perda: {}".format(self.strips[key], solution, self.strips_area[key]-solution_value))
             print(A,b,c)
             self.strips_solution[key] = solution
-            self.strips_solution_loss[key] = solution_loss
+            self.strips_solution_value[key] = solution_value
             
     def _solve_last_knapsack(self):
         L, W = general.plate.L, general.plate.W
@@ -128,28 +128,28 @@ class BidimensionalKnapsack(base.Base):
         for key in self.strips.keys():
             if self.strips_solution[key] is not None:
                 aux.append(key)
-                c.append(self.strips_solution_loss[key])
+                c.append(self.strips_solution_value[key])
 
         A.append(aux)
         b.append(W)
         constraint_types.append(default_constraint_types['LESS_THAN_OR_EQUAL'])
 
         print(A, b, c)
-        solution, solution_loss = self.linear_model(len(aux),
+        solution, solution_value = self.linear_model(len(aux),
                                                dummy_variables,
                                                A,
                                                b,
                                                c,
                                                constraint_types, 0, sense='maximize')
 
-        print(solution, solution_loss)
+        print(solution, solution_value)
 
         self.solution_without_transform = solution
 
         solution = self._transform_solution(solution)   
 
         self.solution = solution
-        self.solution_loss = solution_loss
+        self.solution_value = solution_value
 
     def _transform_solution(self, solution) -> list:
         pieces = general.pieces

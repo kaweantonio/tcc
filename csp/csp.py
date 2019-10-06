@@ -15,8 +15,8 @@ class cuttingStockProblem():
         self.directory_path = path.dirname(self.file_path)
         self.file_name = path.splitext(path.basename(self.file_path))[0]   
         self.solution = None
-        self.solution_loss = None
-        self.solution_loss_percentage = None
+        self.solution_value = None
+        self.solution_value_percentage = None
 
         readfile.read(self.file_path)
 
@@ -110,8 +110,8 @@ class cuttingStockProblem():
         knapsack.solve()
 
         self.solution = knapsack.solution
-        self.solution_loss = knapsack.solution_loss
-        self.solution_loss_percentage = (general.plate.L * general.plate.W) - self.solution_loss
+        self.solution_value = knapsack.solution_value
+        self.solution_value_percentage = (general.plate.L * general.plate.W) - self.solution_value
 
     def _generate_dat_file(self):
         file_name = self.directory_path + sep + self.file_name + '.dat'
@@ -126,7 +126,7 @@ class cuttingStockProblem():
             self._solve()
             # self._generate_dat_file()
 
-        return self.solution, self.solution_loss
+        return self.solution, self.solution_value
 
     def print_final_solution(self):
         pass

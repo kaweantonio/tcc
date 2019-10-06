@@ -34,7 +34,7 @@ def main(file_path):
     problem.get_solution()
     problem.print_final_solution()
 
-    print(problem.solution, problem.solution_loss, problem.solution_loss_percentage)
+    print(problem.solution, problem.solution_value, problem.solution_value_percentage)
 
     if general.DRAW:
         tex.close_document()
