@@ -215,7 +215,6 @@ class RestrictedBidimensionalKnapsack(base.Base):
         L, W = general.plate.L, general.plate.W
 
         dimension = W
-        self._pre_solve()
 
         while True:
             print('dimension: ', dimension)
