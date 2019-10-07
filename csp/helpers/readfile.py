@@ -59,6 +59,8 @@ def read(file_path=None):
                 general.num_pieces_R += 1
 
                 if general.ROTATE:
+                    original_id = general.pieces[-1].id_
+
                     dimensions = general.Dimensions(linha[1], linha[0])
 
                     general.pieces.append(general.Piece(
@@ -66,3 +68,10 @@ def read(file_path=None):
                     general.pieces_R.append(general.pieces[-1])
                     general.num_pieces_R += 1
                     general.num_pieces += 1
+
+                    rotated_id = general.pieces[-1].id_
+
+                    general.original_ids_to_rotated_ids[original_id] = rotated_id
+                    general.rotated_ids_to_original_ids[rotated_id] = original_id
+
+    general.num_pieces_without_combined_pieces = general.num_pieces - general.num_pieces_C

@@ -55,7 +55,7 @@ class cuttingStockProblem():
             general.num_pieces_C += 1
             general.num_pieces += 1
 
-    def _combine_L_R_pieces(self, alfa=0.30):
+    def _combine_L_R_pieces(self, alfa=0.10):
         for piece_L in general.pieces_L:
             
             # determine region to combine pieces:
@@ -71,7 +71,11 @@ class cuttingStockProblem():
                         piece_id_demand = piece_L.id_
                     else:
                         b = piece_R.b
-                        piece_id_demand = piece_R.id_
+
+                        if piece_R.rotated:
+                            piece_id_demand = general.rotated_ids_to_original_ids[piece_R.id_]
+                        else:
+                            piece_id_demand = piece_R.id_
 
                     area = new_l * new_w
                     loss = area - (piece_L.area + piece_R.area)
@@ -99,10 +103,13 @@ class cuttingStockProblem():
                         piece_id_demand = piece_L.id_
                     else:
                         b = piece_R.b
-                        piece_id_demand = piece_R.id_
+
+                        if piece_R.rotated:
+                            piece_id_demand = general.rotated_ids_to_original_ids[piece_R.id_]
+                        else:
+                            piece_id_demand = piece_R.id_
 
                     area = new_l * new_w
-                    print(area, new_l, new_w)
                     loss = area - (piece_L.area + piece_R.area)
                     if loss <= area * alfa:
                         dimensions = general.Dimensions(new_l, new_w)

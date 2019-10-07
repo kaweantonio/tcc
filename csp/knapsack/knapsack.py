@@ -184,7 +184,7 @@ class BidimensionalKnapsack(base.Base):
 
 class RestrictedBidimensionalKnapsack(base.Base):
     def __init__(self):
-        self.solution = [0] * (general.num_pieces_R+general.num_pieces_L)
+        self.solution = None
         self.solution_value = 0
         self.solution_strips = []
         self.solution_strips_with_transform = []
@@ -207,9 +207,12 @@ class RestrictedBidimensionalKnapsack(base.Base):
             id_ = piece.id_
             demand = piece.b
             type_ = piece.type_
+            rotated = piece.rotated
 
-            if type_ != general.COMBINED:
+            if type_ != general.COMBINED and not rotated:
                 self.pieces_demand[id_] = demand
+            
+        self.solution = [0] * len(self.pieces_demand)
 
     def _solve(self):
         L, W = general.plate.L, general.plate.W
@@ -325,7 +328,10 @@ class RestrictedBidimensionalKnapsack(base.Base):
                         ids_to_ignore.append(piece1_id)
                     if piece2_id not in ids_to_ignore:
                         ids_to_ignore.append(piece2_id)
-
+                elif id in general.original_ids_to_rotated_ids.keys():
+                    ids_to_ignore.append(general.original_ids_to_rotated_ids[id])
+                
+            print('\n\nids_to_ignore', ids_to_ignore)
             len_pieces_id_on_strip = len(pieces_id_on_strip)
             
             skip_piece = False
@@ -339,36 +345,56 @@ class RestrictedBidimensionalKnapsack(base.Base):
                 aux = [0] * general.num_pieces
 
                 piece = pieces[id]
+
                 if piece.type_ == general.COMBINED:
                     piece1_id = piece.combination.piece1_id
                     piece2_id = piece.combination.piece2_id
+                    type_ = piece.combination.type_
 
-                    if piece.combination.type_ == general.COMBINE_LL:
+                    if type_ == general.COMBINE_LL:
                         aux[piece1_id] = 1
                         aux[id] = 2
-
                         demand = self.pieces_demand[piece1_id]
-                    elif piece.combination.type_ == general.COMBINE_LR:
+                    elif type_ == general.COMBINE_LR:
                         aux[piece1_id] = 1
                         aux[piece2_id] = 1
                         aux[id] = 2
 
                         demand = self.pieces_demand[piece.combination.piece_id_demand]
+
                     if index+1 < len_pieces_id_on_strip:
                         next_piece = pieces[pieces_id_on_strip[(index+1)]]
+                        np_type_ = next_piece.combination.type_
 
                         if next_piece.type_ == general.COMBINED:
-                            if next_piece.combination.type_ == general.COMBINE_LL:
-                                np_piece1_id = next_piece.combination.piece1_id
-
+                            np_piece1_id = next_piece.combination.piece1_id
+                            np_piece2_id = next_piece.combination.piece2_id
+                            if type_ == general.COMBINE_LL == np_type_:
                                 if np_piece1_id == piece1_id:
                                     aux[next_piece.id_] = 2
                                     skip_piece = True
+                            elif type_ == general.COMBINE_LR == np_type_:
+                                if np_piece1_id == piece1_id:
+                                    if np_piece2_id in general.original_ids_to_rotated_ids.keys():
+                                        if general.original_ids_to_rotated_ids[np_piece2_id] in pieces_id_on_strip:
+                                            aux[general.original_ids_to_rotated_ids[np_piece2_id]] = 1
+                                    else:
+                                        aux[general.rotated_ids_to_original_ids[np_piece2_id]] = 1
 
                     has_contraint = True
                 elif id not in ids_to_ignore:
                     aux[id] = 1
-                    demand = self.pieces_demand[id]
+
+                    if index+1 < len_pieces_id_on_strip:
+                        next_piece = pieces[pieces_id_on_strip[(index+1)]]
+                        np_id_ = next_piece.id_
+                        if id in general.original_ids_to_rotated_ids.keys() and general.original_ids_to_rotated_ids[id] == np_id_:
+                            aux[np_id_] = 1
+                    
+                    if not pieces[id].rotated:
+                        demand = self.pieces_demand[id]
+                    else:
+                        demand = self.pieces_demand[general.rotated_ids_to_original_ids[id]]
                     has_contraint = True
 
                 aux_strips = []
@@ -390,11 +416,12 @@ class RestrictedBidimensionalKnapsack(base.Base):
                                                    constraint_types, i, sense='maximize')
             i += 1
 
-            
+            print(A,b,c)
             if solution is None:
+                print('Faixa: {}'.format(strips[key]))
                 return strips_solution, strips_solution_value
             
-            print(A,b,c)
+            #print(A,b,c)
             print("Faixa: {}, solução: {}, z*: {}".format(strips[key], solution, solution_value))
 
             strips_solution[key], strips_solution_value[key] = solution, solution_value
@@ -424,11 +451,14 @@ class RestrictedBidimensionalKnapsack(base.Base):
     def _transform_solution(self, strip_pieces, solution) -> list:
         pieces = general.pieces
 
-        real_solution = [0] * (len(general.pieces_R) + len(general.pieces_L))
+        real_solution = [0] * (general.num_pieces_without_combined_pieces)
 
         for i, piece in enumerate(strip_pieces):
             if pieces[piece].type_ != general.COMBINED:
-                real_solution[piece] += solution[i]
+                if pieces[piece].rotated:
+                    real_solution[general.rotated_ids_to_original_ids[piece]] += solution[i]
+                else:
+                    real_solution[piece] += solution[i]
             else:
                 combination_type = pieces[piece].combination.type_
                 if combination_type == general.COMBINE_LL:
@@ -439,7 +469,9 @@ class RestrictedBidimensionalKnapsack(base.Base):
                     real_solution[pieces[piece].combination.piece2_id] += solution[i]
                     print("combine_LR", solution[i])
 
-        return real_solution
+        
+
+        return [real_solution[i] for i in self.pieces_demand.keys()]
 
     def _set_solution(self, strip_dimension, strip_pieces, strip_solution, strip_value):
         self.solution_strips_dimensions.append(strip_dimension)
@@ -466,6 +498,8 @@ class RestrictedBidimensionalKnapsack(base.Base):
         #         self.pieces_demand[id] -= strip_solution[index]
 
         strip_solution = self.solution_strips_with_transform[-1]
-        for index in range(len(self.pieces_demand)):
-            self.pieces_demand[index] -= strip_solution[index]
+        print(self.solution_strips[-1])
+        print(strip_solution)
+        for index, key in enumerate(self.pieces_demand.keys()):
+            self.pieces_demand[key] -= strip_solution[index]
             self.solution[index] += strip_solution[index]

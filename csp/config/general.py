@@ -123,9 +123,14 @@ Combination = namedtuple(
 
 # total of all pieces and by type
 num_pieces, num_pieces_R, num_pieces_L, num_pieces_C = 0, 0, 0, 0
+num_pieces_without_combined_pieces = 0
 
 # list of pieces by type
 pieces_R, pieces_L, pieces_C = [], [], []
+
+# dict to store the original ids of rotated pieces
+original_ids_to_rotated_ids = {}
+rotated_ids_to_original_ids = {}
 
 # list of all pieces
 pieces = []
