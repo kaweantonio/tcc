@@ -3,6 +3,9 @@ from typing import Tuple
 import cplex
 from cplex.exceptions import CplexSolverError
 
+from loguru import logger
+
+from csp.config import general
 
 class Base():
 
@@ -54,9 +57,11 @@ class Base():
         model.set_log_stream(None)
         model.set_warning_stream(None)
         model.set_results_stream(None)
-
-        model.write("teste"+str(p_id)+'.lp')
-        
+        model.set_error_stream(None)
+        if general.DEBUG:
+            logger.debug("Salvando arquivo do modelo do problema da mochila {}".format(p_id))
+            model.write("teste"+str(p_id)+'.lp')
+            
         try:
             model.solve()
             return model.solution.get_values(), model.solution.get_objective_value()

@@ -1,12 +1,12 @@
-from os import sep
-from os import path
+from os import sep, path
 from typing import Tuple
 from datetime import datetime
 
 from csp.config import general
 from csp.knapsack.knapsack import BidimensionalKnapsack, RestrictedBidimensionalKnapsack
-from csp.helpers import readfile
+from csp.helpers import readfile, initial_solution, pattern
 
+from loguru import logger
 
 class cuttingStockProblem():
 
@@ -14,14 +14,27 @@ class cuttingStockProblem():
         self.file_path = file_path
         self.directory_path = path.dirname(self.file_path)
         self.file_name = path.splitext(path.basename(self.file_path))[0]   
+        self.initial_solution = None
+        self.initial_solution_value = None
+        self.initial_solution_w = None
         self.solution = None
         self.solution_value = None
+        self.solution_strips = None
+        self.solution_strips_pieces = None
+        self.solution_strips_w = None
         self.solution_value_percentage = None
 
+        logger.info(f'Iniciando leitura do arquivo: {self.file_name}')
         readfile.read(self.file_path)
+        logger.info(f'Leitura do arquivo finalizada')
 
+        logger.info('Gerando peças combinadas')
         self._combine_L_pieces()
+        
         self._combine_L_R_pieces()
+        logger.info('Geradas {} peças combinadas'.format(general.num_pieces_C))
+
+        readfile.info()
 
     def _combine_L_pieces(self):
         # combine L pieces with their mirrored pieces
@@ -55,7 +68,7 @@ class cuttingStockProblem():
             general.num_pieces_C += 1
             general.num_pieces += 1
 
-    def _combine_L_R_pieces(self, alfa=0.10):
+    def _combine_L_R_pieces(self, alfa=0.30):
         for piece_L in general.pieces_L:
             
             # determine region to combine pieces:
@@ -127,29 +140,53 @@ class cuttingStockProblem():
     
     def _solve(self):
         if general.RESTRICTED:
+            logger.info("Tipo de Problema: RESTRITO")
+            self.initial_solution, self.initial_solution_value, self.initial_solution_w = initial_solution.composed()
             knapsack = RestrictedBidimensionalKnapsack()
         else:
+            logger.info("Tipo de Problema: IRRESTRITO")
+            self.initial_solution, self.initial_solution_value = initial_solution.solve()
             knapsack = BidimensionalKnapsack()
+        
+        logger.info("Iniciando método de 2-estágios")
         knapsack.solve()
+        logger.info("Solução encontrada: z*={} e vetor de solução={}".format(knapsack.solution_value, knapsack.solution))
+        logger.info("Processo de 2-estágios finalizado")
 
         self.solution = knapsack.solution
         self.solution_value = knapsack.solution_value
+        self.solution_strips = knapsack.solution_strips
+        self.solution_strips_w = knapsack.solution_strips_w
+        self.solution_strips_pieces = knapsack.solution_strips_pieces
         self.solution_value_percentage = (general.plate.L * general.plate.W) - self.solution_value
 
-    def _generate_dat_file(self):
-        file_name = self.directory_path + sep + self.file_name + '.dat'
+        logger.debug("Variáveis de controle do problema:\n solution: {}\n solution_strips: {}\n solution_strips_w {}\n solution_strips_pieces: {}".format(self.solution, self.solution_strips, self.solution_strips_w, self.solution_strips_pieces))
 
-        datetime_str = datetime.now().strftime("%a, %c")
+    # TODO
+    # def _generate_dat_file(self):
+    #     file_name = self.directory_path + sep + self.file_name + '.dat'
+
+    #     datetime_str = datetime.now().strftime("%a, %c")
         
-        with open(file_name, 'w') as handle:
-            handle.write('Solution for problem {0} generated at {1}'.format(file_name, datetime_str))
+    #     with open(file_name, 'w') as handle:
+    #         handle.write('Solution for problem {0} generated at {1}'.format(file_name, datetime_str))
 
     def get_solution(self) -> Tuple[list, int]:
+        logger.info("Inicialização do processo de solução do problema de corte")
         if self.solution is None:
             self._solve()
             # self._generate_dat_file()
-
+        logger.info("Processo de solução do problema de corte finalizado")
+        
         return self.solution, self.solution_value
 
     def print_final_solution(self):
-        pass
+        logger.info("Desenhando solução final")
+        pattern.final(self.solution_strips, self.solution_strips_w, self.solution_strips_pieces)
+
+    def print_initial_solution(self):
+        logger.info("Desenhando solução inicial")
+        if general.RESTRICTED:
+            pattern.restricted_initial(self.initial_solution, self.initial_solution_w)
+        else:
+            pattern.initial(self.initial_solution, self.initial_solution_value)

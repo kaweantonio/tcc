@@ -1,8 +1,9 @@
 import subprocess as sp
 import shlex
 
-from csp.config import general
+from loguru import logger
 
+from csp.config import general
 
 def preparation():
     general.doc = open('output.tex', 'w+')
@@ -38,9 +39,10 @@ def write(message):
 
 
 def generate_pdf():
+    logger.info("Gerando PDF")
     cmd = 'pdflatex output.tex'
 
-    sp.run(shlex.split(cmd), shell=True)
+    sp.run(shlex.split(cmd), shell=False, stderr=sp.DEVNULL, stdout=sp.DEVNULL)
 
 # def generate_pdf():
 #   preparation()

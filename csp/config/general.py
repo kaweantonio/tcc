@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 import itertools
 from typing import Any
 
-DEBUG = True
+DEBUG = False
 
 #   comb_location: str
 
@@ -95,7 +95,6 @@ class Piece:
 
 # GLOBAL VARIABLES
 ROTATE = False
-REFLECT = True
 DRAW = False
 RESTRICTED = False
 
@@ -108,6 +107,8 @@ COMBINE_LR = 1
 
 VERTICAL = True
 HORIZONTAL = False
+
+factor = 0
 
 id_iter = itertools.count()
 
