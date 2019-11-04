@@ -8,7 +8,7 @@ from csp.helpers import pattern, tex
 
 def regular(plate_L, plate_W, plate_area, pieces):
 
-    min_loss = plate_area
+    area = 0
     piece_index = -1
 
     for piece in pieces:
@@ -28,18 +28,19 @@ def regular(plate_L, plate_W, plate_area, pieces):
         # total area of pieces on plate
         total_area = num_pieces * piece_area
 
-        loss = plate_area - total_area
 
-        if loss < min_loss:
-            min_loss = loss
+        if total_area > area:
+            area = total_area
             piece_index = piece.id_
 
-    return piece_index, min_loss
+    loss = 1 - (area / general.plate.area)        
+    
+    return piece_index, loss
 
 
 def irregular(plate_L, plate_W, plate_area, pieces):
 
-    min_loss = plate_area
+    area = 0
     piece_index = -1
     
     for piece in pieces:
@@ -63,15 +64,17 @@ def irregular(plate_L, plate_W, plate_area, pieces):
         # loss_piece_area = piece.loss
         # total_loss_area = num_pieces * loss_piece_area
 
-        loss = plate_area - total_area
-        if loss < min_loss:
-            min_loss = loss
+        if total_area > area:
+            area = total_area
             piece_index = piece.id_
-    return piece_index, min_loss
+
+    loss = 1 - (area / general.plate.area)        
+    
+    return piece_index, loss
 
 
 def combined(plate_L, plate_W, plate_area, pieces):
-    min_loss = plate_area
+    area = 0
     piece_index = -1
     for piece in pieces:
         if piece.combination.type_ == general.COMBINE_LL:
@@ -95,13 +98,13 @@ def combined(plate_L, plate_W, plate_area, pieces):
             # loss_piece_area = piece.loss
             # total_loss_area = num_pieces * loss_piece_area
 
-            loss = plate_area - total_area
-
-            if loss < min_loss:
-                min_loss = loss
+            if total_area > area:
+                area = total_area
                 piece_index = piece.id_
-
-    return piece_index, min_loss
+    
+    loss = 1 - (area / general.plate.area)        
+    
+    return piece_index, loss
 
 
 def composed():
@@ -109,6 +112,7 @@ def composed():
     L, W = general.plate.L, general.plate.W
     value = 0
     strips = []
+    strips_pieces = []
     strips_w = []
     pieces = copy(general.pieces[:general.num_pieces_without_combined_pieces])
 
@@ -122,9 +126,9 @@ def composed():
             continue
 
         l, w = itemgetter(0)(piece.dimensions), itemgetter(1)(piece.dimensions)
-        
         if w <= W:        
             strips.append([])
+            strips_pieces.append([])
             strips_w.append(w)
             W -= w
         else:
@@ -135,14 +139,16 @@ def composed():
         num_pieces = min(demand, num_pieces)
 
         for _ in range(num_pieces):
-            strips[-1].append(piece.id_)
+            strips_pieces[-1].append(piece.id_)
+            strips[-1].append(num_pieces)
 
         demand -= num_pieces
         strip_L -= num_pieces * l
-        value = num_pieces * piece.area
+        value += num_pieces * piece.area
 
         while demand > 0:
             strips.append([])
+            strips_pieces.append([])
             strip_L = L
             strips_w.append(w)
 
@@ -151,34 +157,38 @@ def composed():
             num_pieces = min(num_pieces, demand)
 
             for _ in range(num_pieces):
-                strips[-1].append(piece.id_)
+                strips_pieces[-1].append(piece.id_)
+                strips[-1].append(num_pieces)
             
             demand -= num_pieces
             strip_L -= num_pieces * l
-            value = num_pieces * piece.area
+            value += num_pieces * piece.area
         
         for j, piece2 in enumerate(pieces_ordered[i+1:], start=i+1):
             l, w = itemgetter(0)(piece2.dimensions), itemgetter(1)(piece2.dimensions)
-            if l <= strip_L:
+            if l <= strip_L and piece2.b > 0:
                 demand = piece2.b
-                num_pieces = strip_L // l
+                num_pieces = strip_L // l 
+
                 num_pieces = min(demand, num_pieces)
 
                 for _ in range(num_pieces):
-                    strips[-1].append(piece2.id_)
+                    strips_pieces[-1].append(piece2.id_)
+                    strips[-1].append(num_pieces)
 
                 pieces_ordered[j].b -= num_pieces
                 strip_L -= num_pieces * l
-                value = num_pieces * piece.area
-
+                value += num_pieces * piece2.area
+    
+    value = 1 - (value / general.plate.area)
 
     logger.info("Solução encontrada")
-    logger.info(' z*={}'.format(value))
+    logger.info(' z*={}%'.format(round(value*100,3)))
     logger.info(' Faixas:')
-    for i, strip in enumerate(strips):
+    for i, strip in enumerate(strips_pieces):
         logger.info('  Faixa {}: {}'.format(i, strip))
     
-    return strips, value, strips_w
+    return strips, value, strips_pieces, strips_w
 
 def solve():
     plate_L = general.plate.L
@@ -192,24 +202,21 @@ def solve():
 
     if general.DEBUG:
         logger.debug("Soluções iniciais encontradas")
-        logger.debug(" Regular: z*={}".format(_regular[1]))
-        logger.debug(" Irregular: z*={}".format(_irregular[1]))
-        logger.debug(" Combined: z*={}".format(_combined[1]))
+        logger.debug(" Regular: z*={}%".format(round(_regular[1]*100, 3)))
+        logger.debug(" Irregular: z*={}%".format(round(_irregular[1]*100,3)))
+        logger.debug(" Combined: z*={}%".format(round(_combined[1]*100,3)))
 
         if general.DRAW:
             logger.debug("Desenhando soluções iniciais encontradas")
             if _regular[0] >= 0:
-                tex.new_page()
                 pattern.initial(_regular[0], _regular[1])
             if _irregular[0] >= 0:
-                tex.new_page()
                 pattern.initial(_irregular[0], _irregular[1])
             if _combined[0] >= 0:
-                tex.new_page()
                 pattern.initial(_combined[0], _combined[1])
 
     _best = _regular if _regular[1] < _irregular[1] else _irregular
     _best = _combined if _combined[1] < _best[1] else _best
 
-    logger.info("Melhor solução inicial: z*={} com peça {}".format(_best[1], _best[0]))
+    logger.info("Melhor solução inicial: z*={}% com peça {}".format(round(_best[1]*100, 3), _best[0]))
     return _best

@@ -53,15 +53,9 @@ def read(file_path=None):
         # tamanho da placa
         linha = f.readline().split()
         L, W = (int(x) for x in linha)
-        general.plate = general.NT_Plate(L, W)
+        general.plate = general.NT_Plate(L, W, (L*W))
 
-        factor = max(L,W)
-
-        num_digits = int(log10(factor))+1
-
-        general.factor = pow(10,-(num_digits-2))
-
-        logger.debug(f"FACTOR {general.factor}")
+        logger.info(f"FACTOR {general.factor}")
         
         # número de peças
         linha = f.readline()
@@ -69,6 +63,9 @@ def read(file_path=None):
 
         for _ in range(general.num_pieces):
             linha = [int(x) for x in (f.readline().split())]
+
+            if len(linha) < 3:
+                linha.append(1)
 
             # verifica se a peça é regular ou do tipo-L
             if linha[0] == general.IRREGULAR:  # peça do tipo L

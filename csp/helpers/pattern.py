@@ -158,8 +158,8 @@ def draw_piece_C_LR(pieceC, x, y):
 
     location = pieceC.combination.location
 
-    if location == general.VERTICAL:
-        y -= piece2.dimensions.w * general.factor
+    # if location == general.VERTICAL:
+    #     y -= piece2.dimensions.w * general.factor
 
     # draw base piece, which is always a L piece
 
@@ -235,7 +235,7 @@ def initial(piece_index, lost_area):
     # local x, y
     x = 0
     y = 0
-
+    tex.new_page()
     tex.open_tikz()
     draw_plate(x, y)
     x = 0
@@ -290,7 +290,8 @@ def restricted_initial(strips, strips_w):
     # local x, y
     x = 0
     y = 0
-
+    
+    tex.new_page()
     tex.open_tikz()
     draw_plate(x, y)
     x = 0
@@ -317,14 +318,14 @@ def restricted_initial(strips, strips_w):
         y += strips_w[i] * general.factor
     
     tex.close_tikz()
-    tex.new_page()
 
 def final(strips, strips_w, strips_pieces):
     pieces = copy(general.pieces)
     # local x, y
     x = 0
     y = 0
-
+    
+    tex.new_page()
     tex.open_tikz()
     draw_plate(x, y)
 
@@ -333,7 +334,7 @@ def final(strips, strips_w, strips_pieces):
     for i, strip in enumerate(strips_pieces):
         x = 0
         for j, piece_id in enumerate(strip):
-            num_piece_alocation = int(strips[i][j])
+            num_piece_alocation = int(round(strips[i][j],1))
             if num_piece_alocation == 0:
                 continue
 
@@ -357,7 +358,7 @@ def final(strips, strips_w, strips_pieces):
                     draw_function = draw_piece_C_LL
 
                 elif piece.combination.type_ == general.COMBINE_LR:
-                    w = piece.dimensions.w
+                    w = pieces[piece.combination.piece1_id].dimensions.w1
                     aux_y = y+(w * general.factor)
                     draw_function = draw_piece_C_LR
 

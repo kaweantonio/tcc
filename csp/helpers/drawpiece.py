@@ -261,59 +261,64 @@ def draw_pieces():
     logger.info("Desenhando peças")
     global x, y
     new_page = False
-    tex.open_tikz()
-    
-    for _ in range(0, general.num_pieces_R):
-        if new_page:
-            tex.open_tikz()
-            new_page = False
-        piece_R = general.pieces_R[_]
-        draw_piece_R(piece_R.id_, piece_R.dimensions)
-        if abs(y) > 30:
-            y = 0
-            tex.close_tikz()
-            tex.new_page()
-            new_page = True
-    
-    if not new_page:
-        tex.close_tikz()
-        tex.new_page()
 
-    tex.open_tikz()
-    for _ in range(0, general.num_pieces_L):
-        if new_page:
-            tex.open_tikz()
-            new_page = False
-        piece_L = general.pieces_L[_]
-        draw_piece_L(piece_L.id_, piece_L.dimensions)
-        if abs(y) > 30:
-            y = 0
-            tex.close_tikz()
-            tex.new_page()
-            new_page = True
-    
-    if not new_page:
-        tex.close_tikz()
-        tex.new_page()
-
-    tex.open_tikz()
-    for _ in range(0, general.num_pieces_C):
-        if new_page:
-            tex.open_tikz()
-            new_page = False
-        piece_C = general.pieces_C[_]
-        if piece_C.combination.type_ == general.COMBINE_LL:
-            draw_piece_C_LL(piece_C)
-    
-        elif piece_C.combination.type_ == general.COMBINE_LR:
-            draw_piece_C_LR(piece_C)
+    if general.num_pieces_R > 0:
+        tex.open_tikz()
         
-        if abs(y) > 30:
-            y = 0
+        for _ in range(0, general.num_pieces_R):
+            if new_page:
+                tex.open_tikz()
+                new_page = False
+            
+            piece_R = general.pieces_R[_]
+            draw_piece_R(piece_R.id_, piece_R.dimensions)
+            if abs(y) > 30:
+                y = 0
+                tex.close_tikz()
+                tex.new_page()
+                new_page = True
+        
+        if not new_page:
             tex.close_tikz()
             tex.new_page()
-            new_page = True
 
-    if not new_page:
-        tex.close_tikz()
-        tex.new_page()
+    if general.num_pieces_L > 0:
+        tex.open_tikz()
+        for _ in range(0, general.num_pieces_L):
+            if new_page:
+                tex.open_tikz()
+                new_page = False
+            piece_L = general.pieces_L[_]
+            draw_piece_L(piece_L.id_, piece_L.dimensions)
+            if abs(y) > 30:
+                y = 0
+                tex.close_tikz()
+                tex.new_page()
+                new_page = True
+    
+        if not new_page:
+            tex.close_tikz()
+            tex.new_page()
+    
+    if general.num_pieces_C:
+        tex.open_tikz()
+        for _ in range(0, general.num_pieces_C):
+            if new_page:
+                tex.open_tikz()
+                new_page = False
+            piece_C = general.pieces_C[_]
+            if piece_C.combination.type_ == general.COMBINE_LL:
+                draw_piece_C_LL(piece_C)
+        
+            elif piece_C.combination.type_ == general.COMBINE_LR:
+                draw_piece_C_LR(piece_C)
+            
+            if abs(y) > 30:
+                y = 0
+                tex.close_tikz()
+                tex.new_page()
+                new_page = True
+
+        if not new_page:
+            tex.close_tikz()
+            tex.new_page()

@@ -11,6 +11,7 @@ def preparation():
         "\\documentclass{article}\n"
         "\\usepackage[utf8]{inputenc}\n"
         "\\usepackage{tikz}\n"
+        "\\usepackage{tikzscale}\n"
         "\\usetikzlibrary{positioning}\n"
         "\\usepackage[a4paper]{geometry}"
         "\n\n\\begin{document}\n"

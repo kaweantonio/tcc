@@ -113,7 +113,7 @@ factor = 0
 id_iter = itertools.count()
 
 # plate information
-NT_Plate = namedtuple("PlateNamedTuple", ["L", "W"])
+NT_Plate = namedtuple("PlateNamedTuple", ["L", "W", "area"])
 plate = Any
 
 Dimensions = namedtuple("Dimensions", ['l', 'w'])

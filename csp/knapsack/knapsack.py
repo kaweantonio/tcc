@@ -81,9 +81,9 @@ class BidimensionalKnapsack(base.Base):
         self.len_strips = len(strips)
 
         if not general.DEBUG:
-            logger.info("Faixas geradas")
-            for i, strip in enumerate(strips): 
-                logger.info(" Faixa {}: {}".format(i, strip))
+            logger.debug("Faixas geradas")
+            for i, key in enumerate(strips): 
+                logger.debug(" Faixa {}: {}".format(i, strips[key]))
 
     def _solve_strips(self):
         # create linear problem for each strip
@@ -266,7 +266,7 @@ class RestrictedBidimensionalKnapsack(base.Base):
             logger.debug('Demandas restantes a serem atendidas: {}'.format(self.pieces_demand))
 
             logger.debug("Gerando faixas conforme informações de Dimensão e Demandas")
-            strips = self._generate_strips(dimension)
+            strips, strips_area = self._generate_strips(dimension)
 
             if not strips:
                 logger.debug("Nenhuma faixa nova criada. Saindo do loop")
@@ -275,15 +275,20 @@ class RestrictedBidimensionalKnapsack(base.Base):
             logger.debug("Solucionando faixas encontradas")
             strips_solution, strips_solution_value = self._solve_strips(strips)
 
+            if len(strips_solution.items()) == 0:
+                raise ValueError("Não é possível encontrar uma solução viável para o problema")
+
             logger.debug("Selecionando melhor faixa")
-            best_strip_solution, best_strip_solution_value, best_strip_solution_key = self._select_best_strip(strips_solution, strips_solution_value)
+            best_strip_solution, best_strip_solution_value, best_strip_solution_key = self._select_best_strip(strips_solution, strips_solution_value, strips_area)
+            logger.debug("Melhor faixa: {} - solução {}, ids: {}".format(best_strip_solution, best_strip_solution_value, strips[best_strip_solution_key]))
             
             logger.debug("Alocando melhor faixa na solução final")
             self._set_solution(best_strip_solution_key, strips[best_strip_solution_key], best_strip_solution, best_strip_solution_value)
 
             dimension -= best_strip_solution_key
             
-            # input()
+            if general.DEBUG:
+                input("Aperte para continuar")
         
         logger.debug("Solução: {}".format(self.solution))
         logger.debug("Solução das faixas: {}".format(self.solution_strips))
@@ -293,19 +298,42 @@ class RestrictedBidimensionalKnapsack(base.Base):
         logger.debug("Valor final da solução: {}".format(self.solution_value))
 
     def _generate_strips(self, dimension):
+        check_demand = True
+
+        # if any(i >= 0 for i in self.pieces_demand):
+        #     check_demand = True
+        # else:
+        #     check_demand = False
+
         pieces = general.pieces
+        L = general.plate.L
         strips = dict()
-        
+        strips_area = dict()
+
         unique_w = []
 
         for piece in pieces:
             if piece.type_ == general.IRREGULAR:
                 w = piece.dimensions.w1
+
+                demand = self.pieces_demand[piece.id_]
             else:
                 w = piece.dimensions.w
-            
+
+                if piece.type_ == general.COMBINED:
+                    demand = self.pieces_demand[piece.combination.piece_id_demand]
+                else:
+                    if not piece.rotated:
+                        demand = self.pieces_demand[piece.id_]
+                    else:
+                        demand = self.pieces_demand[general.rotated_ids_to_original_ids[piece.id_]]
+
             if w > dimension:
                 continue
+        
+            if check_demand:
+                if demand <= 0:
+                    continue
 
             if w not in unique_w:
                 unique_w.append(w)
@@ -316,24 +344,40 @@ class RestrictedBidimensionalKnapsack(base.Base):
 
         for i in unique_w:
             aux = []
-
             for piece in pieces:
                 if piece.type_ == general.IRREGULAR:
                     w = piece.dimensions.w1
+
+                    demand = self.pieces_demand[piece.id_]
                 else:
                     w = piece.dimensions.w
 
-                if w <= i:
-                    aux.append(piece.id_)
+                    if piece.type_ == general.COMBINED:
+                        demand = self.pieces_demand[piece.combination.piece_id_demand]
+                    else:
+                        if not piece.rotated:
+                            demand = self.pieces_demand[piece.id_]
+                        else:
+                            demand = self.pieces_demand[general.rotated_ids_to_original_ids[piece.id_]]
+
+                if check_demand:
+                    if w <= i and demand > 0:
+                        aux.append(piece.id_)
+                else:
+                    if w <= i:
+                        aux.append(piece.id_)
+
+
             
             if len(aux) > 0:
                 strips[i] = aux
+                strips_area[i] = i * L
 
         logger.debug("Faixas criadas:")
-        for i, strip in enumerate(strips):
-            logger.debug("Faixa {}: {}".format(i, strip))
+        for i, key in enumerate(strips):
+            logger.debug("Faixa {}: {}".format(i, strips[key]))
                     
-        return strips
+        return strips, strips_area
 
     def _solve_strips(self, strips):
         # create linear problem for each strip
@@ -459,7 +503,7 @@ class RestrictedBidimensionalKnapsack(base.Base):
                 if has_contraint and demand > 0:
                     A.append(aux_strips)
                     b.append(demand)
-                    constraint_types.append(default_constraint_types['GREATER_THAN_OR_EQUAL'])
+                    constraint_types.append(default_constraint_types['LESS_THAN_OR_EQUAL'])
 
             solution, solution_value = self.linear_model(len(pieces_id_on_strip),
                                                    dummy_variables,
@@ -469,9 +513,9 @@ class RestrictedBidimensionalKnapsack(base.Base):
                                                    constraint_types, i, sense='maximize')
             i += 1
 
-            logger.debug("Dados do problema - Matrix A: {}, vetor b: {}, vetor de constantes: {}".format(A,b,c))
+            logger.trace("Dados do problema - Matrix A: {}, vetor b: {}, vetor de constantes: {}".format(A,b,c))
             if solution is None:
-                logger.debug('Faixa: {}'.format(strips[key]))
+                logger.debug("Faixa: {}, solução: {}, z*: {}".format(strips[key], solution, solution_value))
                 return strips_solution, strips_solution_value
             
             #print(A,b,c)
@@ -481,7 +525,7 @@ class RestrictedBidimensionalKnapsack(base.Base):
         
         return strips_solution, strips_solution_value 
 
-    def _select_best_strip(self, strips_solution, strips_solution_value):
+    def _select_best_strip(self, strips_solution, strips_solution_value, strips_area):
         best_strip_solution_value = -1
         best_strip_solution = None
         best_strip_key = None
@@ -489,6 +533,9 @@ class RestrictedBidimensionalKnapsack(base.Base):
         for key in strips_solution_value.keys():
             strip = strips_solution[key]
             value = strips_solution_value[key]
+            area = strips_area[key]
+
+            value = (value / area)
 
             if value > best_strip_solution_value:
                 best_strip_solution_value = value
@@ -499,7 +546,7 @@ class RestrictedBidimensionalKnapsack(base.Base):
                     best_strip_solution = strip
                     best_strip_key = key
         
-        return best_strip_solution, best_strip_solution_value, best_strip_key
+        return best_strip_solution, strips_solution_value[best_strip_key], best_strip_key
 
     def _transform_solution(self, strip_pieces, solution) -> list:
         pieces = general.pieces
@@ -554,5 +601,5 @@ class RestrictedBidimensionalKnapsack(base.Base):
         # print(self.solution_strips[-1])
         # print(strip_solution)
         for index, key in enumerate(self.pieces_demand.keys()):
-            self.pieces_demand[key] -= strip_solution[index]
+            self.pieces_demand[key] -= round(strip_solution[index],1)
             self.solution[index] += strip_solution[index]

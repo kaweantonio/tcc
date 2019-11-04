@@ -58,9 +58,9 @@ class Base():
         model.set_warning_stream(None)
         model.set_results_stream(None)
         model.set_error_stream(None)
-        if general.DEBUG:
-            logger.debug("Salvando arquivo do modelo do problema da mochila {}".format(p_id))
-            model.write("teste"+str(p_id)+'.lp')
+        # if general.DEBUG:
+        #     logger.debug("Salvando arquivo do modelo do problema da mochila {}".format(p_id))
+        #     model.write("teste"+str(p_id)+'.lp')
             
         try:
             model.solve()

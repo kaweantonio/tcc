@@ -22,7 +22,7 @@ class cuttingStockProblem():
         self.solution_strips = None
         self.solution_strips_pieces = None
         self.solution_strips_w = None
-        self.solution_value_percentage = None
+        self.solution_loss_percentage = None
 
         logger.info(f'Iniciando leitura do arquivo: {self.file_name}')
         readfile.read(self.file_path)
@@ -68,7 +68,7 @@ class cuttingStockProblem():
             general.num_pieces_C += 1
             general.num_pieces += 1
 
-    def _combine_L_R_pieces(self, alfa=0.30):
+    def _combine_L_R_pieces(self, alfa=0.10):
         for piece_L in general.pieces_L:
             
             # determine region to combine pieces:
@@ -141,7 +141,7 @@ class cuttingStockProblem():
     def _solve(self):
         if general.RESTRICTED:
             logger.info("Tipo de Problema: RESTRITO")
-            self.initial_solution, self.initial_solution_value, self.initial_solution_w = initial_solution.composed()
+            self.initial_solution, self.initial_solution_value, self.initial_solution_strips, self.initial_solution_w = initial_solution.composed()
             knapsack = RestrictedBidimensionalKnapsack()
         else:
             logger.info("Tipo de Problema: IRRESTRITO")
@@ -150,15 +150,16 @@ class cuttingStockProblem():
         
         logger.info("Iniciando método de 2-estágios")
         knapsack.solve()
-        logger.info("Solução encontrada: z*={} e vetor de solução={}".format(knapsack.solution_value, knapsack.solution))
-        logger.info("Processo de 2-estágios finalizado")
 
         self.solution = knapsack.solution
         self.solution_value = knapsack.solution_value
         self.solution_strips = knapsack.solution_strips
         self.solution_strips_w = knapsack.solution_strips_w
         self.solution_strips_pieces = knapsack.solution_strips_pieces
-        self.solution_value_percentage = (general.plate.L * general.plate.W) - self.solution_value
+        self.solution_loss_percentage = 1 - (self.solution_value / general.plate.area)
+
+        logger.info("Solução encontrada: z*={}% e vetor de solução={}".format(round(self.solution_loss_percentage*100,3), self.solution_strips))
+        logger.info("Processo de 2-estágios finalizado")
 
         logger.debug("Variáveis de controle do problema:\n solution: {}\n solution_strips: {}\n solution_strips_w {}\n solution_strips_pieces: {}".format(self.solution, self.solution_strips, self.solution_strips_w, self.solution_strips_pieces))
 
@@ -187,6 +188,6 @@ class cuttingStockProblem():
     def print_initial_solution(self):
         logger.info("Desenhando solução inicial")
         if general.RESTRICTED:
-            pattern.restricted_initial(self.initial_solution, self.initial_solution_w)
+            pattern.restricted_initial(self.initial_solution_strips, self.initial_solution_w)
         else:
-            pattern.initial(self.initial_solution, self.initial_solution_value)
+            pattern.initial(self.initial_solution_strips, self.initial_solution_value)
