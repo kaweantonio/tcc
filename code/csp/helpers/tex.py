@@ -6,7 +6,7 @@ from loguru import logger
 from csp.config import general
 
 def preparation():
-    general.doc = open('output.tex', 'w+')
+    general.doc = open(f'{general.output_filename}.tex', 'w+')
     write(
         "\\documentclass{article}\n"
         "\\usepackage[utf8]{inputenc}\n"
@@ -41,7 +41,7 @@ def write(message):
 
 def generate_pdf():
     logger.info("Gerando PDF")
-    cmd = 'pdflatex output.tex'
+    cmd = f'pdflatex {general.output_filename}.tex'
 
     sp.run(shlex.split(cmd), shell=False, stderr=sp.DEVNULL, stdout=sp.DEVNULL)
 

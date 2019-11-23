@@ -61,7 +61,7 @@ if __name__ == "__main__":
         general.DEBUG = True
 
     general.factor = args.factor
-
+    general.output_filename = args.output
 
     try:
         with open(args.input, 'r') as handle:

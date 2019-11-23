@@ -109,6 +109,7 @@ VERTICAL = True
 HORIZONTAL = False
 
 factor = 0
+output_filename = ""
 
 id_iter = itertools.count()
 
