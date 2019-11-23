@@ -44,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--draw', action='store_true', default=False, help='draw pieces and solution in PDF')
     parser.add_argument('-R', '--RESTRICTED', action='store_true', default=False, help='solve the problem as a restricted problem')
     parser.add_argument('--debug', action='store_true', default=False, help='Give more output to help debugging.')
-    parser.add_argument('--factor', action='store', type=float, default=0.01)
+    parser.add_argument('--factor', action='store', type=float, default=0.01, help='Factor used to draw initial and final solution')
     parser.add_argument('input', help='input file, BiL format')
     parser.add_argument('output', help='output file, PDF format (default: output.pdf)', default="output.pdf", nargs='?')
     
