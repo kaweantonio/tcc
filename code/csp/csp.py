@@ -190,4 +190,4 @@ class cuttingStockProblem():
         if general.RESTRICTED:
             pattern.restricted_initial(self.initial_solution_strips, self.initial_solution_w)
         else:
-            pattern.initial(self.initial_solution_strips, self.initial_solution_value)
+            pattern.initial(self.initial_solution, self.initial_solution_value)
